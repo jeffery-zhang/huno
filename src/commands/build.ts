@@ -6,7 +6,9 @@ interface IParams {
 }
 
 const action = async ({ env }: IParams) => {
-  const config = new Config(env!)
+  const builder = new Builder(env)
+
+  builder.run()
 }
 
 export const build: SingleCommand = {
@@ -14,4 +16,16 @@ export const build: SingleCommand = {
   description: 'build sites',
   action,
   options: [['-e --env <env>', 'set environment', 'prod']],
+}
+
+export class Builder {
+  constructor(env?: string) {
+    this._config = new Config(env)
+  }
+
+  private _config: Config | null = null
+
+  run() {
+    console.log(this._config)
+  }
 }
