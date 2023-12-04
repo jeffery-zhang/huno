@@ -2,9 +2,9 @@ import path from 'path'
 import fs from 'fs'
 import yaml from 'yaml'
 import lodash from 'lodash'
-
-import { IConfig, PageParams } from '../types'
 import chalk from 'chalk'
+
+import { CoreConfig, PageParams } from '../types'
 
 const defaultPageParams: PageParams = {
   baseUrl: '/',
@@ -12,45 +12,69 @@ const defaultPageParams: PageParams = {
   title: 'Awesome Title',
   description: 'This is an Awesome Description!',
   author: 'Huno',
+  keywords: [],
 }
 
 export class Config {
   constructor(env?: string) {
     if (env) this._env = env
+    this.parseConfig()
   }
 
   private _configDir = 'config'
   private _configFile = 'config.yaml'
   private _env: string = 'prod'
-  private _config: IConfig = {
+  private _config: CoreConfig = {
     contentDir: 'content',
     outputDir: 'dist',
     templateDir: 'template',
+    publicDir: 'public',
     port: 8080,
-    PageParams: defaultPageParams,
+    templateName: 'default',
+    pageParams: defaultPageParams,
   }
 
-  get env() {
+  private parseBaseUrl(url: string) {
+    if (!url.endsWith('/')) {
+      return url + '/'
+    }
+    return url
+  }
+
+  get env(): string {
     return this._env
   }
-  get contentDir() {
+  get contentDir(): string {
     return this._config.contentDir
   }
-  get outputDir() {
+  get outputDir(): string {
     return this._config.outputDir
   }
-  get templateDir() {
+  get templateDir(): string {
     return this._config.templateDir
   }
-  get port() {
+  get publicDir(): string {
+    return this._config.publicDir
+  }
+  get port(): number {
     return this._config.port
   }
-  get pageParams() {
-    return this._config.PageParams
+  get templateName(): string {
+    return this._config.templateName
+  }
+  get pageParams(): PageParams {
+    const baseUrl = this.parseBaseUrl(this._config.pageParams.baseUrl)
+    return {
+      ...this._config.pageParams,
+      baseUrl,
+    }
+  }
+  get coreConfig() {
+    return this._config
   }
 
   public parseConfig() {
-    console.log(chalk.yellowBright('开始解析配置文件...'))
+    console.log(chalk.yellowBright('Start parsing config files...'))
 
     const baseConfigFilePath = path.join(
       path.resolve(),
@@ -80,6 +104,14 @@ export class Config {
       this._config = lodash.merge(this._config, envConfig)
     }
 
-    console.log(chalk.greenBright('配置加载成功'))
+    if (!configExists && !envConfigExists) {
+      console.log(
+        chalk.yellowBright(
+          'No existing config files found. Huno is now building with default config...',
+        ),
+      )
+    } else {
+      console.log(chalk.greenBright('config files loaded!'))
+    }
   }
 }

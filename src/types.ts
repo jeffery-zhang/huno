@@ -5,12 +5,14 @@ export interface SingleCommand {
   options?: string[][]
 }
 
-export interface IConfig {
+export interface CoreConfig {
   contentDir: string
   outputDir: string
   templateDir: string
+  publicDir: string
+  templateName: string
   port: number
-  PageParams: PageParams
+  pageParams: PageParams
 }
 
 export interface PageParams {
@@ -19,4 +21,26 @@ export interface PageParams {
   title: string
   description: string
   author: string
+  keywords: string[]
+}
+
+export interface SinglePageParams {
+  title?: string
+  description?: string
+  author?: string
+  keywords?: string[]
+  createTime?: string
+  updateTime?: string
+}
+
+export interface SinglePageConfig extends PageParams {
+  page: SinglePageParams
+}
+
+export interface CompiledPageConfig {
+  config: SinglePageConfig
+  url: string
+  filePath: string
+  content: string
+  updateTime: string
 }

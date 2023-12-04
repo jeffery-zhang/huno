@@ -1,4 +1,7 @@
 import { Config } from '../lib/config'
+import { Path } from '../lib/path'
+import { Template } from '../lib/template'
+import { Compiler } from '../lib/compiler'
 import { SingleCommand } from '../types'
 
 interface IParams {
@@ -19,13 +22,14 @@ export const build: SingleCommand = {
 }
 
 export class Builder {
-  constructor(env?: string) {
-    this._config = new Config(env)
-  }
+  constructor(env?: string) {}
 
+  private _env: string = 'prod'
   private _config: Config | null = null
 
   run() {
-    console.log(this._config)
+    const template = new Template(this._env)
+    const compiler = new Compiler(template)
+    console.log(compiler)
   }
 }
