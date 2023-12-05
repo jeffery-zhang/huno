@@ -28,19 +28,34 @@ export interface SinglePageParams {
   title?: string
   description?: string
   author?: string
+  url?: string
   keywords?: string[]
   createTime?: string
   updateTime?: string
 }
 
 export interface SinglePageConfig extends PageParams {
-  page: SinglePageParams
+  page?: SinglePageParams
 }
 
-export interface CompiledPageConfig {
+export interface ParsedPageConfig {
   config: SinglePageConfig
   url: string
-  filePath: string
+  relativeFilePath: string
+  absoluteFilePath?: string
   content: string
-  updateTime: string
+  updateTime?: string
+}
+
+export interface ListTemplateParams extends PageParams {
+  list: SinglePageParams[]
+}
+
+export interface CompiledPageConfig extends Omit<ParsedPageConfig, 'content'> {
+  article: string
+}
+
+export interface RenderedPageConfig
+  extends Omit<ParsedPageConfig, 'content' | 'config'> {
+  html: string
 }

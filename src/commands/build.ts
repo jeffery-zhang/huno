@@ -1,7 +1,9 @@
 import { Config } from '../lib/config'
 import { Path } from '../lib/path'
 import { Template } from '../lib/template'
+import { Reader } from '../lib/reader'
 import { Compiler } from '../lib/compiler'
+import { Renderer } from '../lib/renderer'
 import { SingleCommand } from '../types'
 
 interface IParams {
@@ -11,7 +13,7 @@ interface IParams {
 const action = async ({ env }: IParams) => {
   const builder = new Builder(env)
 
-  builder.run()
+  await builder.run()
 }
 
 export const build: SingleCommand = {
@@ -22,14 +24,39 @@ export const build: SingleCommand = {
 }
 
 export class Builder {
-  constructor(env?: string) {}
+  constructor(env?: string) {
+    if (env) this._env = env
+  }
 
   private _env: string = 'prod'
-  private _config: Config | null = null
 
-  run() {
-    const template = new Template(this._env)
-    const compiler = new Compiler(template)
-    console.log(compiler)
+  async run() {
+    const reader = new Reader(this._env)
+    const compiler = new Compiler(reader)
+    const renderer = new Renderer(reader)
+
+    const promises: Promise<any>[] = [
+      new Promise((resolve) => {
+        const renderedIndexPageConfig =
+          renderer.renderIndexPageConfig(parsedPageConfigList)
+        resolve(renderedIndexPageConfig)
+      }),
+    ]
+    const parsedPageConfigList = reader.parsedPageConfigList
+    parsedPageConfigList.forEach((config) => {
+      const compiledPageConfig = compiler.compileSinglePageContent(config)
+      if (compiledPageConfig) {
+        promises.push(
+          new Promise((resolve) => {
+            const renderedContentPageConfig =
+              renderer.renderContentPageConfig(compiledPageConfig)
+            resolve(renderedContentPageConfig)
+          }),
+        )
+      }
+    })
+
+    const result = await Promise.all(promises)
+    console.log(result)
   }
 }

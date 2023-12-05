@@ -3,7 +3,6 @@ import path from 'path'
 
 import { Path } from './path'
 import { markedRendererFileNames } from '../utils/markedRenderer'
-import { CoreConfig } from '../types'
 // @ts-ignore
 import BasicLayout from '../../template/basicLayout.html'
 // @ts-ignore
@@ -36,7 +35,7 @@ export class Template extends Path {
           ({
             name,
             template: this.getSingleMarkupTemplate(name),
-            ignore: !!this.getSingleMarkupTemplate(name),
+            ignore: !this.getSingleMarkupTemplate(name),
           } as MarkupTemplateItem),
       )
       .filter(({ ignore }) => !ignore)
