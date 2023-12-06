@@ -24,6 +24,7 @@ export class Cache {
     if (this.cacheExists) {
       const data = fs.readFileSync(target, 'utf-8') || '{}'
       this._cacheData = JSON.parse(data)
+      console.log(this._cacheData)
     }
   }
 

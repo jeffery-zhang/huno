@@ -58,16 +58,8 @@ export class Builder {
       }).then(() => {
         console.log(chalk.greenBright('Generating index page completed!'))
       }),
-      new Promise((resolve) => {
-        generator.copyAssets().then(() => {
-          resolve(true)
-        })
-      }),
-      new Promise((resolve) => {
-        generator.copyPublic().then(() => {
-          resolve(true)
-        })
-      }),
+      generator.copyAssets(),
+      generator.copyPublic(),
     ]
     parsedPageConfigList.forEach((config) => {
       const compiledPageConfig = compiler.compileSinglePageContent(config)

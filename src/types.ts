@@ -33,6 +33,7 @@ export interface SinglePageParams {
   keywords?: string[]
   createTime?: string
   updateTime?: string
+  lastModified?: number
   [key: string]: any
 }
 

@@ -63,20 +63,23 @@ export class Reader extends Template {
 
   private readSingleContentAndStats(absoluteFilePath: string): {
     content: string
+    lastModified: number
     updateTime: string
     createTime: string
   } | null {
     try {
       const fileStats = fs.statSync(absoluteFilePath)
-      const lastModifiedMs = fileStats.mtimeMs
-      if (!this._cache.hasChanged(absoluteFilePath, lastModifiedMs)) {
+      const lastModified = Math.floor(fileStats.mtimeMs)
+      if (!this._cache.hasChanged(absoluteFilePath, lastModified)) {
+        console.log('跳过构建...', lastModified)
         return null
       }
       const createTime = fileStats.birthtime
       const content = fs.readFileSync(absoluteFilePath, 'utf-8')
       return {
         content,
-        updateTime: dayjs(lastModifiedMs).format('YYYY-MM-DD HH:mm:ss'),
+        lastModified,
+        updateTime: dayjs(lastModified).format('YYYY-MM-DD HH:mm:ss'),
         createTime: dayjs(createTime).format('YYYY-MM-DD HH:mm:ss'),
       }
     } catch (error) {

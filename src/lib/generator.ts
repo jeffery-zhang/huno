@@ -19,7 +19,7 @@ export class Generator {
   private _path: Path
   private _cache: Cache
 
-  async copyAssets() {
+  async copyAssets(): Promise<any> {
     const targetPath = path.join(this._path.outputPath, 'assets')
     return new Promise((resolve, reject) => {
       console.log(chalk.yellowBright('Start to generate assets files...'))
@@ -46,7 +46,7 @@ export class Generator {
       })
   }
 
-  async copyPublic() {
+  async copyPublic(): Promise<any> {
     return new Promise((resolve, reject) => {
       console.log(chalk.yellowBright('Start to generate public files...'))
       fs.cp(
@@ -99,6 +99,8 @@ export class Generator {
       writeStream.on('error', (error) => {
         reject(error)
       })
+
+      writeStream.end()
     }).catch((error) => {
       console.error(
         chalk.redBright(`Generate ${config.relativeFilePath} error\n${error}`),
