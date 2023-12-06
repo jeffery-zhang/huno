@@ -1,7 +1,6 @@
 import path from 'path'
 
 import { Config } from './config'
-import { CoreConfig } from '../types'
 
 export class Path extends Config {
   constructor(env: string) {
@@ -25,6 +24,16 @@ export class Path extends Config {
   }
   get defaultTemplatePath(): string {
     return path.join(this.hunoRootPath, 'template')
+  }
+  get templatePath() {
+    if (this.templateName === 'default' || !this.templateName) {
+      return this.defaultTemplatePath
+    } else {
+      return path.join(this.customTemplatePath, this.templateName)
+    }
+  }
+  get templateAssetsPath() {
+    return path.join(this.templatePath, 'assets')
   }
   get publicPath(): string {
     return path.join(this.rootPath, this.publicDir)

@@ -14,13 +14,22 @@ export class Reader extends Template {
 
   private _contentConfigRegexp = /\+\+\+(.*?)\+\+\+/s
 
-  private filePathToUrl(filePath: string): string {
-    return filePath
+  private filePathToUrl(absoluteFilePath: string): string {
+    return absoluteFilePath
+      .replace(this.contentPath, '')
       .replace(/\\/g, '/')
+      .slice(1)
       .replace('.md', '')
       .split('/')
       .map((url) => encodeURI(url))
       .join('/')
+  }
+
+  private getOutputRelativeFilePath(absoluteFilePath: string) {
+    return absoluteFilePath
+      .replace(this.contentPath, '')
+      .slice(1)
+      .replace('.md', '')
   }
 
   private extractContentConfig(content: string): SinglePageParams {
@@ -78,8 +87,9 @@ export class Reader extends Template {
         const contentConfig = this.extractContentConfig(options.content)
         if (!contentConfig.title) return
         const content = this.extractContentWithoutConfig(options.content)
-        const relativeFilePath = md
-        const url = this.filePathToUrl(md)
+        const relativeFilePath =
+          this.getOutputRelativeFilePath(absoluteFilePath)
+        const url = this.filePathToUrl(absoluteFilePath)
         const fullSinglePageConfig: SinglePageConfig = {
           ...this.pageParams,
           page: {
