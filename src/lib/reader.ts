@@ -5,13 +5,19 @@ import chalk from 'chalk'
 import dayjs from 'dayjs'
 
 import { Template } from './template'
+import { Cache } from './cache'
 import { SinglePageParams, SinglePageConfig, ParsedPageConfig } from '../types'
 
 export class Reader extends Template {
-  constructor(env: string) {
+  constructor(env: string, cache: Cache) {
+    if (!cache) {
+      throw new Error('Cache is required in generator')
+    }
     super(env)
+    this._cache = cache
   }
 
+  private _cache: Cache
   private _contentConfigRegexp = /\+\+\+(.*?)\+\+\+/s
 
   private filePathToUrl(absoluteFilePath: string): string {
@@ -55,23 +61,26 @@ export class Reader extends Template {
     return globSync(`${this.contentPath}/**/*.md`)
   }
 
-  private readSingleContentAndStats(filePath: string): {
+  private readSingleContentAndStats(absoluteFilePath: string): {
     content: string
     updateTime: string
     createTime: string
   } | null {
     try {
-      const content = fs.readFileSync(filePath, 'utf-8')
-      const fileStats = fs.statSync(filePath)
-      const updateTime = fileStats.mtime
+      const fileStats = fs.statSync(absoluteFilePath)
+      const lastModifiedMs = fileStats.mtimeMs
+      if (!this._cache.hasChanged(absoluteFilePath, lastModifiedMs)) {
+        return null
+      }
       const createTime = fileStats.birthtime
+      const content = fs.readFileSync(absoluteFilePath, 'utf-8')
       return {
         content,
-        updateTime: dayjs(updateTime).format('YYYY-MM-DD HH:mm:ss'),
+        updateTime: dayjs(lastModifiedMs).format('YYYY-MM-DD HH:mm:ss'),
         createTime: dayjs(createTime).format('YYYY-MM-DD HH:mm:ss'),
       }
     } catch (error) {
-      console.error(chalk.redBright(`Read ${filePath} error\n${error}`))
+      console.error(chalk.redBright(`Read ${absoluteFilePath} error\n${error}`))
       return null
     }
   }
@@ -86,10 +95,10 @@ export class Reader extends Template {
       if (options) {
         const contentConfig = this.extractContentConfig(options.content)
         if (!contentConfig.title) return
-        const content = this.extractContentWithoutConfig(options.content)
+        const url = this.filePathToUrl(absoluteFilePath)
         const relativeFilePath =
           this.getOutputRelativeFilePath(absoluteFilePath)
-        const url = this.filePathToUrl(absoluteFilePath)
+        const content = this.extractContentWithoutConfig(options.content)
         const fullSinglePageConfig: SinglePageConfig = {
           ...this.pageParams,
           page: {

@@ -1,0 +1,22 @@
+/* content */
+.post {
+  margin-top: var(--gap-lg);
+}
+.post-header {
+  margin-bottom: var(--gap-md);
+}
+.post-header .post-title {
+  font-size: var(--header-size);
+}
+.post-header .post-desc {
+  color: var(--secondary);
+}
+.post-meta {
+  display: flex;
+  gap: var(--gap-sm);
+  color: var(--primary);
+}
+.post-image {
+  max-width: 100%;
+  margin: 0 auto;
+}

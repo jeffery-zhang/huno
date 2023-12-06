@@ -2,9 +2,10 @@ import chalk from 'chalk'
 import { program } from 'commander'
 
 import { build } from './commands/build'
+import { preview } from './commands/preview'
 
 const setCommand = async () => {
-  const commands = [build]
+  const commands = [build, preview]
   const promises: Promise<any>[] = []
   commands.map((obj) => {
     promises.push(

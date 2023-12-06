@@ -22,6 +22,7 @@ export interface PageParams {
   description: string
   author: string
   keywords: string[]
+  [key: string]: any
 }
 
 export interface SinglePageParams {
@@ -32,6 +33,7 @@ export interface SinglePageParams {
   keywords?: string[]
   createTime?: string
   updateTime?: string
+  [key: string]: any
 }
 
 export interface SinglePageConfig extends PageParams {
@@ -42,7 +44,7 @@ export interface ParsedPageConfig {
   config: SinglePageConfig
   url: string
   relativeFilePath: string
-  absoluteFilePath?: string
+  absoluteFilePath: string
   content: string
   updateTime?: string
 }

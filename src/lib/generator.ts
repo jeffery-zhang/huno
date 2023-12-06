@@ -1,19 +1,23 @@
 import path from 'path'
 import fs from 'fs'
 import chalk from 'chalk'
+import dayjs from 'dayjs'
 
 import { Path } from './path'
+import { Cache } from './cache'
 import { RenderedPageConfig } from '../types'
 
 export class Generator {
-  constructor(path: Path) {
-    if (!path) {
-      throw new Error('Path is required in generator')
+  constructor(path: Path, cache: Cache) {
+    if (!path || !cache) {
+      throw new Error('Path and Cache is required in generator')
     }
     this._path = path
+    this._cache = cache
   }
 
   private _path: Path
+  private _cache: Cache
 
   async copyAssets() {
     const targetPath = path.join(this._path.outputPath, 'assets')
@@ -58,7 +62,7 @@ export class Generator {
       )
     })
       .then(() => {
-        console.log(chalk.greenBright('Generating assets files completed!'))
+        console.log(chalk.greenBright('Generating public files completed!'))
       })
       .catch((err) => {
         console.error(
@@ -75,7 +79,6 @@ export class Generator {
       fs.mkdirSync(targetPath, { recursive: true })
     }
     const targetFilePath = path.join(targetPath, 'index.html')
-    console.log('目标目录: ', targetFilePath)
 
     return new Promise((resolve, reject) => {
       const writeStream = fs.createWriteStream(targetFilePath)
@@ -83,6 +86,13 @@ export class Generator {
       writeStream.write(config.html, 'utf-8')
 
       writeStream.on('finish', () => {
+        if (config.updateTime) {
+          this._cache.updateCache(
+            config.absoluteFilePath,
+            dayjs(config.updateTime!).valueOf(),
+          )
+        }
+
         resolve('ok')
       })
 

@@ -43,6 +43,7 @@ export class Renderer {
         html: $.html(),
         url: '',
         relativeFilePath: '',
+        absoluteFilePath: this._template.rootPath,
       }
     } catch (error) {
       console.error(chalk.redBright(`Render index page error\n${error}`))

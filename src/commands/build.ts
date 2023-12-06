@@ -1,13 +1,11 @@
 import chalk from 'chalk'
 
-import { Config } from '../lib/config'
-import { Path } from '../lib/path'
-import { Template } from '../lib/template'
+import { Cache } from '../lib/cache'
 import { Reader } from '../lib/reader'
 import { Compiler } from '../lib/compiler'
 import { Renderer } from '../lib/renderer'
-import { SingleCommand } from '../types'
 import { Generator } from '../lib/generator'
+import { SingleCommand } from '../types'
 
 interface IParams {
   env?: string
@@ -36,12 +34,15 @@ export class Builder {
   private _env: string = 'prod'
 
   async run() {
-    const reader = new Reader(this._env)
+    const cache = new Cache('build')
+    const reader = new Reader(this._env, cache)
     const compiler = new Compiler(reader)
     const renderer = new Renderer(reader)
-    const generator = new Generator(reader)
+    const generator = new Generator(reader, cache)
 
     const parsedPageConfigList = reader.parsedPageConfigList
+    if (parsedPageConfigList.length === 0) return
+
     const promises: Promise<any>[] = [
       new Promise(async (resolve) => {
         console.log(
@@ -75,7 +76,7 @@ export class Builder {
           new Promise(async (resolve) => {
             console.log(
               chalk.yellowBright(
-                `Start to render and generate page ${compiledPageConfig.relativeFilePath}...`,
+                `Start to render and generate page ${compiledPageConfig.url}...`,
               ),
             )
             const renderedContentPageConfig =
@@ -88,7 +89,7 @@ export class Builder {
           }).then(() => {
             console.log(
               chalk.greenBright(
-                `Generating page ${compiledPageConfig.relativeFilePath} completed!`,
+                `Generating page ${compiledPageConfig.url} completed!`,
               ),
             )
           }),
@@ -97,5 +98,6 @@ export class Builder {
     })
 
     await Promise.all(promises)
+    cache.writeCache()
   }
 }
