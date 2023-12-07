@@ -4,7 +4,7 @@ import yaml from 'yaml'
 import lodash from 'lodash'
 import chalk from 'chalk'
 
-import { CoreConfig, PageParams } from '../types'
+import { CoreConfig, PageParams, ParsedCategoryConfig } from '../types'
 
 const defaultPageParams: PageParams = {
   baseUrl: '/',
@@ -13,11 +13,12 @@ const defaultPageParams: PageParams = {
   description: 'This is an Awesome Description!',
   author: 'Huno',
   keywords: [],
+  categories: [],
 }
 
 export class Config {
-  constructor(env?: string) {
-    if (env) this._env = env
+  constructor(env: string) {
+    this._env = env
     this.parseConfig()
   }
 
@@ -31,6 +32,7 @@ export class Config {
     publicDir: 'public',
     port: 8080,
     templateName: 'default',
+    outputCategoryDir: 'category',
     pageParams: defaultPageParams,
   }
 
@@ -62,6 +64,9 @@ export class Config {
   get templateName(): string {
     return this._config.templateName
   }
+  get outputCategoryDir(): string {
+    return this._config.outputCategoryDir
+  }
   get pageParams(): PageParams {
     const baseUrl = this.parseBaseUrl(this._config.pageParams.baseUrl)
     return {
@@ -71,6 +76,9 @@ export class Config {
   }
   get coreConfig() {
     return this._config
+  }
+  set categoryList(categoryList: ParsedCategoryConfig[]) {
+    this._config.pageParams.categories = categoryList
   }
 
   public parseConfig() {

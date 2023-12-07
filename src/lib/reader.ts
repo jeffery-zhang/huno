@@ -5,24 +5,26 @@ import chalk from 'chalk'
 import dayjs from 'dayjs'
 
 import { Template } from './template'
-import { Cache } from './cache'
-import { SinglePageParams, SinglePageConfig, ParsedPageConfig } from '../types'
+import {
+  SinglePageParams,
+  SinglePageFullParams,
+  ParsedPageConfig,
+  ParsedCategoryConfig,
+} from '../types'
 
 export class Reader extends Template {
-  constructor(env: string, cache: Cache) {
-    if (!cache) {
-      throw new Error('Cache is required in generator')
-    }
+  constructor(env: string) {
     super(env)
-    this._cache = cache
+    this.parseContent()
   }
 
-  private _cache: Cache
   private _contentConfigRegexp = /\+\+\+(.*?)\+\+\+/s
+  private _parsedPageConfigList: ParsedPageConfig[] = []
+  private _parsedCategoryConfigList: ParsedCategoryConfig[] = []
 
-  private filePathToUrl(absoluteFilePath: string): string {
-    return absoluteFilePath
-      .replace(this.contentPath, '')
+  private getPageUrlThroughInputFilePath(inputFilePath: string): string {
+    return inputFilePath
+      .replace(this.rootPath, '')
       .replace(/\\/g, '/')
       .slice(1)
       .replace('.md', '')
@@ -31,14 +33,13 @@ export class Reader extends Template {
       .join('/')
   }
 
-  private getOutputRelativeFilePath(absoluteFilePath: string) {
-    return absoluteFilePath
-      .replace(this.contentPath, '')
-      .slice(1)
+  private getOutputFilePath(inputFilePath: string) {
+    return inputFilePath
+      .replace(this.rootPath, this.outputPath)
       .replace('.md', '')
   }
 
-  private extractContentConfig(content: string): SinglePageParams {
+  private extractContentConfig(content: string): SinglePageParams | null {
     const contentConfig: { [key: string]: string } = {}
     const reg = this._contentConfigRegexp
     const match = content.match(reg)
@@ -49,7 +50,7 @@ export class Reader extends Template {
         contentConfig[key] = value?.trim() ?? ''
       })
       return contentConfig as SinglePageParams
-    } else return {}
+    } else return null
   }
 
   private extractContentWithoutConfig(content: string): string {
@@ -61,69 +62,108 @@ export class Reader extends Template {
     return globSync(`${this.contentPath}/**/*.md`)
   }
 
-  private readSingleContentAndStats(absoluteFilePath: string): {
+  private readSingleContentAndStats(inputFilePath: string): {
+    page: SinglePageParams
+    outputFilePath: string
     content: string
     lastModified: number
-    updateTime: string
-    createTime: string
   } | null {
     try {
-      const fileStats = fs.statSync(absoluteFilePath)
+      const fileStats = fs.statSync(inputFilePath)
       const lastModified = Math.floor(fileStats.mtimeMs)
-      if (!this._cache.hasChanged(absoluteFilePath, lastModified)) {
-        console.log(`Skip compiling using cache: ${absoluteFilePath}`)
-        return null
-      }
       const createTime = fileStats.birthtime
-      const content = fs.readFileSync(absoluteFilePath, 'utf-8')
+      const text = fs.readFileSync(inputFilePath, 'utf-8')
+      const contentConfig = this.extractContentConfig(text)
+      if (!contentConfig || !contentConfig.title) return null
+      const category = contentConfig.category || 'default'
+      this.generateCategoryConfigList(category)
+      const outputFilePath = this.getOutputFilePath(inputFilePath)
+      const url = this.getPageUrlThroughInputFilePath(inputFilePath)
+      const content = this.extractContentWithoutConfig(text)
+
       return {
+        page: {
+          ...contentConfig,
+          author: contentConfig.author || 'Anonymous',
+          category,
+          url,
+          createTime:
+            contentConfig.createTime ||
+            dayjs(createTime).format('YYYY-MM-DD HH:mm:ss'),
+          updateTime:
+            contentConfig.updateTime ||
+            dayjs(lastModified).format('YYYY-MM-DD HH:mm:ss'),
+        },
+        outputFilePath,
         content,
         lastModified,
-        updateTime: dayjs(lastModified).format('YYYY-MM-DD HH:mm:ss'),
-        createTime: dayjs(createTime).format('YYYY-MM-DD HH:mm:ss'),
       }
     } catch (error) {
-      console.error(chalk.redBright(`Read ${absoluteFilePath} error\n${error}`))
+      console.error(chalk.redBright(`Read ${inputFilePath} error\n${error}`))
       return null
     }
   }
 
+  private getCategoryPageUrl(category: string) {
+    return `${encodeURI(this.outputCategoryDir)}/${encodeURI(category)}`
+  }
+
+  private generateCategoryConfigList(category: string) {
+    if (
+      category &&
+      !this._parsedCategoryConfigList.some((item) => item.category === category)
+    ) {
+      const outputFilePath = path.join(this.outputCategoryPath, category)
+      this._parsedCategoryConfigList.push({
+        category,
+        outputFilePath,
+        url: this.getCategoryPageUrl(category),
+      })
+    }
+  }
+
   get parsedPageConfigList(): ParsedPageConfig[] {
+    return this._parsedPageConfigList.sort(
+      ({ lastModified: a }, { lastModified: b }) => b - a,
+    )
+  }
+
+  get parsedCategoryConfigList(): ParsedCategoryConfig[] {
+    return this._parsedCategoryConfigList
+  }
+
+  parseContent() {
     console.log(chalk.yellowBright('Start parsing content files...'))
     const mds = this.findAllContentMds()
-    const parsedPageConfigList: ParsedPageConfig[] = []
     mds.forEach((md) => {
-      const absoluteFilePath = path.join(this.rootPath, md)
-      const options = this.readSingleContentAndStats(absoluteFilePath)
+      const inputFilePath = path.join(this.rootPath, md)
+      const options = this.readSingleContentAndStats(inputFilePath)
       if (options) {
-        const contentConfig = this.extractContentConfig(options.content)
-        if (!contentConfig.title) return
-        const url = this.filePathToUrl(absoluteFilePath)
-        const relativeFilePath =
-          this.getOutputRelativeFilePath(absoluteFilePath)
-        const content = this.extractContentWithoutConfig(options.content)
-        const fullSinglePageConfig: SinglePageConfig = {
+        const fullSinglePageFullParams: SinglePageFullParams = {
           ...this.pageParams,
           page: {
-            ...contentConfig,
-            author: contentConfig.author || 'Anonymous',
-            url,
-            createTime: contentConfig.createTime || options.createTime,
-            updateTime: contentConfig.updateTime || options.updateTime,
+            ...options.page,
           },
         }
 
-        parsedPageConfigList.push({
-          config: fullSinglePageConfig,
-          url,
-          relativeFilePath,
-          absoluteFilePath,
-          content,
+        this._parsedPageConfigList.push({
+          params: fullSinglePageFullParams,
+          category: options.page.category,
+          url: options.page.url,
+          outputFilePath: options.outputFilePath,
+          inputFilePath,
+          content: options.content,
           lastModified: options.lastModified,
         })
       }
     })
+    this.categoryList = this._parsedCategoryConfigList
     console.log(chalk.greenBright('Parsing content files completed!'))
-    return parsedPageConfigList
+  }
+
+  getContentOfCategoryConfigList(category: string): ParsedPageConfig[] {
+    return this._parsedPageConfigList.filter(
+      (item) => item.category === category,
+    )
   }
 }

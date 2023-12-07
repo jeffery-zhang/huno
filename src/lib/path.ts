@@ -19,6 +19,12 @@ export class Path extends Config {
   get outputPath(): string {
     return path.join(this.rootPath, this.outputDir)
   }
+  get outputContentPath() {
+    return path.join(this.outputPath, this.contentDir)
+  }
+  get outputCategoryPath() {
+    return path.join(this.outputPath, this.outputCategoryDir)
+  }
   get customTemplatePath(): string {
     return path.join(this.rootPath, this.templateDir)
   }

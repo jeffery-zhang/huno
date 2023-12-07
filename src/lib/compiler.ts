@@ -48,13 +48,14 @@ export class Compiler {
   ): CompiledPageConfig | null {
     try {
       const article = marked(config.content) as string
+      const { content, ...rest } = config
       return {
-        ...config,
+        ...rest,
         article,
       }
     } catch (error) {
       console.error(
-        chalk.redBright(`Compile ${config.absoluteFilePath} error\n${error}`),
+        chalk.redBright(`Compile ${config.inputFilePath} error\n${error}`),
       )
       return null
     }

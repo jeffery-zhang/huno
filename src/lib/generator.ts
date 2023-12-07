@@ -1,11 +1,14 @@
 import path from 'path'
 import fs from 'fs'
 import chalk from 'chalk'
-import dayjs from 'dayjs'
 
 import { Path } from './path'
 import { Cache } from './cache'
-import { RenderedPageConfig } from '../types'
+import {
+  RenderedCategoryPageConfig,
+  RenderedIndexPageConfig,
+  RenderedPageConfig,
+} from '../types'
 
 export class Generator {
   constructor(path: Path, cache: Cache) {
@@ -72,22 +75,19 @@ export class Generator {
       })
   }
 
-  async generatePageThroughRenderedConfig(config: RenderedPageConfig) {
-    const targetPath = path.join(this._path.outputPath, config.relativeFilePath)
+  private async generateSinglePage(targetPath: string, html: string) {
     const targetExists = fs.existsSync(targetPath)
     if (!targetExists) {
       fs.mkdirSync(targetPath, { recursive: true })
     }
     const targetFilePath = path.join(targetPath, 'index.html')
 
-    return new Promise((resolve, reject) => {
+    return new Promise<'ok'>((resolve, reject) => {
       const writeStream = fs.createWriteStream(targetFilePath)
 
-      writeStream.write(config.html, 'utf-8')
+      writeStream.write(html, 'utf-8')
 
       writeStream.on('finish', () => {
-        this._cache.updateCache(config.absoluteFilePath, config.lastModified)
-
         resolve('ok')
       })
 
@@ -97,10 +97,38 @@ export class Generator {
 
       writeStream.end()
     }).catch((error) => {
-      console.error(
-        chalk.redBright(`Generate ${config.relativeFilePath} error\n${error}`),
-      )
+      console.error(chalk.redBright(`Generate ${targetPath} error\n${error}`))
       process.exit(1)
     })
+  }
+
+  async generateIndexPage(config: RenderedIndexPageConfig) {
+    const targetPath = this._path.outputPath
+    const result = await this.generateSinglePage(targetPath, config.html)
+    if (result) {
+      return result
+    }
+  }
+
+  async generatePageThroughRenderedConfig(config: RenderedPageConfig) {
+    const result = await this.generateSinglePage(
+      config.outputFilePath,
+      config.html,
+    )
+    const { html, ...rest } = config
+    this._cache.updateCache(config.url, rest)
+
+    return result
+  }
+
+  async generateCategoryPage(config: RenderedCategoryPageConfig) {
+    const result = await this.generateSinglePage(
+      config.outputFilePath,
+      config.html,
+    )
+    const { html, ...rest } = config
+    this._cache.updateCache(config.url, rest)
+
+    return result
   }
 }
