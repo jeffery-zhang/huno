@@ -86,12 +86,7 @@ export class Generator {
       writeStream.write(config.html, 'utf-8')
 
       writeStream.on('finish', () => {
-        if (config.updateTime) {
-          this._cache.updateCache(
-            config.absoluteFilePath,
-            dayjs(config.updateTime!).valueOf(),
-          )
-        }
+        this._cache.updateCache(config.absoluteFilePath, config.lastModified)
 
         resolve('ok')
       })

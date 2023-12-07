@@ -71,7 +71,7 @@ export class Reader extends Template {
       const fileStats = fs.statSync(absoluteFilePath)
       const lastModified = Math.floor(fileStats.mtimeMs)
       if (!this._cache.hasChanged(absoluteFilePath, lastModified)) {
-        console.log('跳过构建...', lastModified)
+        console.log(`Skip compiling using cache: ${absoluteFilePath}`)
         return null
       }
       const createTime = fileStats.birthtime
@@ -119,7 +119,7 @@ export class Reader extends Template {
           relativeFilePath,
           absoluteFilePath,
           content,
-          updateTime: options.updateTime,
+          lastModified: options.lastModified,
         })
       }
     })

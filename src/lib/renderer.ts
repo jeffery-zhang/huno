@@ -9,6 +9,7 @@ import {
 } from '../types'
 import { Template } from './template'
 import chalk from 'chalk'
+import dayjs from 'dayjs'
 
 export class Renderer {
   constructor(template: Template) {
@@ -43,6 +44,7 @@ export class Renderer {
         html: $.html(),
         url: '',
         relativeFilePath: '',
+        lastModified: dayjs().valueOf(),
         absoluteFilePath: this._template.rootPath,
       }
     } catch (error) {

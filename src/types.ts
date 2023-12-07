@@ -47,7 +47,7 @@ export interface ParsedPageConfig {
   relativeFilePath: string
   absoluteFilePath: string
   content: string
-  updateTime?: string
+  lastModified: number
 }
 
 export interface ListTemplateParams extends PageParams {
