@@ -1,9 +1,13 @@
+@import url('./variables.css');
+
 /* content */
 .post {
   margin-top: var(--gap-lg);
 }
 .post-header {
+  padding-bottom: var(--gap-md);
   margin-bottom: var(--gap-md);
+  border-bottom: 1px solid var(--neutral-content);
 }
 .post-header .post-title {
   font-size: var(--header-size);
@@ -15,6 +19,9 @@
   display: flex;
   gap: var(--gap-sm);
   color: var(--primary);
+}
+.post-content {
+  padding: var(--gap-md) 0;
 }
 .post-image {
   max-width: 100%;

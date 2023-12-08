@@ -1,4 +1,16 @@
+@import url('./variables.css');
+
 /* index list */
+.category {
+  margin: var(--gap-lg) 0;
+}
+.category h2 {
+  padding: var(--gap-md) 0;
+  font-size: var(--title-size);
+  font-weight: 700;
+  font-style: italic;
+  color: var(--secondary);
+}
 .list {
   display: flex;
   flex-direction: row;
@@ -12,7 +24,7 @@
 }
 .entry {
   position: relative;
-  width: 49%;
+  width: 100%;
   margin-bottom: var(--gap-md);
   padding: var(--gap-md);
   /* border: 1px solid var(--neutral); */
@@ -28,13 +40,6 @@
   top: 0;
   right: 0;
   bottom: 0;
-}
-.entry.first-entry {
-  width: 100%;
-  /* border: none; */
-  box-shadow: none;
-  background-color: var(--base-300);
-  transition: transform 0.1s;
 }
 .entry:active {
   transform: scale(0.99);
@@ -54,10 +59,13 @@
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
 }
-.first-entry .entry-content {
-  font-size: var(--content-size);
-}
 .entry footer {
   font-size: var(--subtext-size);
   color: var(--secondary);
+}
+
+@media screen and (min-width: 768px) {
+  .entry {
+    width: 49%;
+  }
 }

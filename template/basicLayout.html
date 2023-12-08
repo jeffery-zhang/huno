@@ -17,8 +17,7 @@
     />
     <link
       rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css"
-      integrity="sha512-NhSC1YmyruXifcj/KFRWoC561YpHpc5Jtzgvbuzx5VozKpWvQ+4nXhPdFgmx8xqexRcpAglTj9sIBWINXa8x5w=="
+      href="{{baseUrl}}assets/css/normalize.min.css"
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
@@ -35,11 +34,20 @@
         <div class="logo">
           <a href="{{baseUrl}}" title="{{title}}">{{title}}</a>
         </div>
+        <div class="menu">
+          {% for category in categories %}
+          <a href="{{baseUrl}}{{category.url}}">{{category.category}}</a>
+          {% endfor %}
+        </div>
+        <div class="search">
+          <input type="text" id="search" placeholder="Search..." />
+        </div>
       </nav>
     </header>
     <main id="main" class="main"></main>
     <footer class="footer">
       <span>© 2023 {{title}}</span>
     </footer>
+    <script src="{{baseUrl}}assets/js/search.js"></script>
   </body>
 </html>

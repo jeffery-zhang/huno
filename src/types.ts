@@ -32,6 +32,7 @@ export interface SinglePageParams {
   title?: string
   description?: string
   author?: string
+  category: string
   keywords?: string[]
   createTime?: string
   updateTime?: string
@@ -44,6 +45,7 @@ export interface SinglePageFullParams extends PageParams {
 
 export interface ListTemplateParams extends PageParams {
   list: SinglePageParams[]
+  category: string
 }
 
 export interface SingleCategoryPageParams extends PageParams {
@@ -71,6 +73,10 @@ export interface CompiledPageConfig extends Omit<ParsedPageConfig, 'content'> {
 }
 
 export interface RenderedIndexPageConfig {
+  html: string
+}
+
+export interface RenderedSearchPageConfig {
   html: string
 }
 

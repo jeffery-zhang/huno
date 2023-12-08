@@ -10,6 +10,7 @@ import {
   RenderedCategoryPageConfig,
   RenderedIndexPageConfig,
   RenderedPageConfig,
+  RenderedSearchPageConfig,
   SinglePageFullParams,
 } from '../types'
 
@@ -29,12 +30,16 @@ export class Renderer {
     return nunjucks.renderString(basicLayoutTemplate, pageParams)
   }
 
-  private renderContentList(configs: ParsedPageConfig[]): string {
+  private renderContentList(
+    configs: ParsedPageConfig[],
+    category?: string,
+  ): string {
     const listTemplate = this._template.listTemplate
     const listParams = configs.map((cfg) => cfg.params.page)
     return nunjucks.renderString(listTemplate, {
       ...this._template.pageParams,
       list: listParams,
+      category,
     })
   }
 
@@ -64,6 +69,12 @@ export class Renderer {
     }
   }
 
+  renderSearchPageConfig(): RenderedSearchPageConfig {
+    return {
+      html: this.renderBasicLayout(),
+    }
+  }
+
   renderContentPageConfig(config: CompiledPageConfig): RenderedPageConfig {
     const $ = cheerio.load(this.renderBasicLayout(config.params))
     const container = $(this.renderSingleContentContainer(config.params))
@@ -82,7 +93,9 @@ export class Renderer {
     configs: ParsedPageConfig[],
   ): RenderedCategoryPageConfig {
     const $ = cheerio.load(this.renderBasicLayout())
-    const listDom = $(this.renderContentList(configs))
+    const listDom = $(
+      this.renderContentList(configs, parsedCategoryConfig.category),
+    )
     $('main#main').append(listDom)
     return {
       ...parsedCategoryConfig,

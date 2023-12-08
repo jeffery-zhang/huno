@@ -1,26 +1,27 @@
 import path from 'path'
 import fs from 'fs'
 import chalk from 'chalk'
+import xml2js from 'xml2js'
 
 import { Path } from './path'
 import { Cache } from './cache'
 import {
+  ParsedPageConfig,
   RenderedCategoryPageConfig,
   RenderedIndexPageConfig,
   RenderedPageConfig,
+  RenderedSearchPageConfig,
 } from '../types'
 
 export class Generator {
-  constructor(path: Path, cache: Cache) {
-    if (!path || !cache) {
-      throw new Error('Path and Cache is required in generator')
+  constructor(path: Path) {
+    if (!path) {
+      throw new Error('Path is required in generator')
     }
     this._path = path
-    this._cache = cache
   }
 
   private _path: Path
-  private _cache: Cache
 
   async copyAssets(): Promise<any> {
     const targetPath = path.join(this._path.outputPath, 'assets')
@@ -75,17 +76,21 @@ export class Generator {
       })
   }
 
-  private async generateSinglePage(targetPath: string, html: string) {
+  private async generateSinglePage(
+    targetPath: string,
+    text: string,
+    filename?: string,
+  ) {
     const targetExists = fs.existsSync(targetPath)
     if (!targetExists) {
       fs.mkdirSync(targetPath, { recursive: true })
     }
-    const targetFilePath = path.join(targetPath, 'index.html')
+    const targetFilePath = path.join(targetPath, filename ?? 'index.html')
 
     return new Promise<'ok'>((resolve, reject) => {
       const writeStream = fs.createWriteStream(targetFilePath)
 
-      writeStream.write(html, 'utf-8')
+      writeStream.write(text, 'utf-8')
 
       writeStream.on('finish', () => {
         resolve('ok')
@@ -110,13 +115,19 @@ export class Generator {
     }
   }
 
+  async generateSearchPage(config: RenderedSearchPageConfig) {
+    const targetPath = path.join(this._path.outputPath, 'search')
+    const result = await this.generateSinglePage(targetPath, config.html)
+    if (result) {
+      return result
+    }
+  }
+
   async generatePageThroughRenderedConfig(config: RenderedPageConfig) {
     const result = await this.generateSinglePage(
       config.outputFilePath,
       config.html,
     )
-    const { html, ...rest } = config
-    this._cache.updateCache(config.url, rest)
 
     return result
   }
@@ -126,8 +137,25 @@ export class Generator {
       config.outputFilePath,
       config.html,
     )
-    const { html, ...rest } = config
-    this._cache.updateCache(config.url, rest)
+
+    return result
+  }
+
+  async generateContentMapXml(configs: ParsedPageConfig[]) {
+    const builder = new xml2js.Builder()
+    const data = configs.map((config) => {
+      const { content, ...rest } = config
+      return rest
+    })
+    const xmlData = builder.buildObject({
+      contentMap: { content: data },
+    })
+
+    const result = await this.generateSinglePage(
+      this._path.outputPath,
+      xmlData,
+      'contentMap.xml',
+    )
 
     return result
   }

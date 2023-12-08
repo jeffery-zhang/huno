@@ -47,7 +47,7 @@ export class Reader extends Template {
       const lines = match[1].trim().split('\n')
       lines.forEach((line) => {
         const [key, value]: string[] = line.split('=')
-        contentConfig[key] = value?.trim() ?? ''
+        contentConfig[key.trim()] = value?.trim() ?? ''
       })
       return contentConfig as SinglePageParams
     } else return null

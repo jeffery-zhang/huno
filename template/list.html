@@ -4,21 +4,13 @@
   href="{{baseUrl}}assets/css/index.css"
   as="style"
 />
+{% if category %}
+<div class="category">
+  <h2>{{category}}</h2>
+</div>
+{% endif %}
 <div class="list">
-  {% for item in list %} {% if loop.first %}
-  <article class="first-entry entry">
-    <a href="{{baseUrl}}{{item.url}}" class="link"></a>
-    <header>
-      <h2>{{item.title}}</h2>
-    </header>
-    <div class="entry-content">
-      <p>{{item.description}}</p>
-    </div>
-    <footer>
-      <span>{{item.updateTime}}</span>
-    </footer>
-  </article>
-  {% else %}
+  {% for item in list %}
   <article class="entry">
     <a href="{{baseUrl}}{{item.url}}" class="link"></a>
     <header>
@@ -31,5 +23,5 @@
       <span>{{item.updateTime}}</span>
     </footer>
   </article>
-  {% endif %} {% endfor %}
+  {% endfor %}
 </div>

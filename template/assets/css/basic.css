@@ -1,51 +1,4 @@
-:root {
-  /* colors */
-  --base-100: #ffffff;
-  --base-200: #f2f7ff;
-  --base-300: #e3e9f4;
-  --base-content: #394e6a;
-  --primary: #0069ff;
-  --primary-content: #cee4ff;
-  --secondary: #463aa2;
-  --secondary-content: #d5d7ef;
-  --accent: #c148ac;
-  --accent-content: #0e020b;
-  --neutral: #021431;
-  --neutral-content: #c5cbd3;
-  --info: #93e7fb;
-  --info-content: #081315;
-  --success: #81cfd1;
-  --success-content: #061010;
-  --warning: #efd7bb;
-  --warning-content: #14110d;
-  --error: #e58b8b;
-  --error-content: #120707;
-  --shadow: rgba(2, 20, 49, 0.3);
-
-  /* common */
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 8px;
-  --shadow-sm: 0 1px 3px 0 var(--shadow), 0 1px 2px -1px var(--shadow);
-  --shadow-md: 0 10px 15px -3px var(--shadow), 0 4px 6px -4px var(--shadow);
-  --shadow-lg: 0 25px 50px -12px var(--shadow);
-  --gap-sm: 16px;
-  --gap-md: 20px;
-  --gap-lg: 24px;
-  --break-sm: 4px;
-  --break-md: 8px;
-  --break-lg: 12px;
-  --header-height: 60px;
-  --footer-height: 60px;
-  --nav-max-width: 1024px;
-  --main-max-width: 720px;
-  --header-size: 28px;
-  --title-size: 24px;
-  --subtitle-size: 20px;
-  --content-size: 16px;
-  --desc-size: 14px;
-  --subtext-size: 12px;
-}
+@import url('./variables.css');
 
 /* basic layout */
 *,
@@ -82,6 +35,38 @@ body {
   text-decoration: none;
   color: var(--primary);
 }
+.menu {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  gap: var(--gap-sm);
+  margin: 0 var(--gap-md);
+  padding: 0 var(--gap-md);
+}
+.menu a {
+  font-size: var(--content-size);
+  text-decoration: none;
+  color: var(--base-content);
+  transition: all 0.2s ease;
+}
+.menu a:hover {
+  color: var(--primary);
+}
+.menu a:active {
+  transform: translateY(1%);
+}
+.search {
+  padding: 0 var(--gap-md);
+}
+.search input {
+  width: 160px;
+  height: 32px;
+  outline: none;
+  border: 1px solid var(--neutral-content);
+  border-radius: var(--radius-sm);
+}
 .main {
   max-width: calc(var(--main-max-width) + 2 * var(--gap-md));
   min-height: calc(100vh - var(--header-height) - var(--footer-height));
@@ -95,4 +80,10 @@ body {
   font-size: var(--subtext-size);
   text-align: center;
   color: var(--neutral-content);
+}
+
+@media screen and (max-width: 768px) {
+  .menu {
+    display: none;
+  }
 }

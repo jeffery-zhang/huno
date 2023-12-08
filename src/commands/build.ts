@@ -38,7 +38,7 @@ export class Builder {
     const reader = new Reader(this._env)
     const compiler = new Compiler(reader)
     const renderer = new Renderer(reader)
-    const generator = new Generator(reader, cache)
+    const generator = new Generator(reader)
 
     const parsedPageConfigList = reader.parsedPageConfigList
     const parsedCategoryConfigList = reader.parsedCategoryConfigList
@@ -64,6 +64,21 @@ export class Builder {
       }).then((msg) => {
         console.log(msg)
       }),
+      new Promise<string>(async (resolve) => {
+        console.log(
+          chalk.yellowBright('Start to generate content map xml file...'),
+        )
+        const result = await generator.generateContentMapXml(
+          parsedPageConfigList,
+        )
+        if (result === 'ok') {
+          resolve(
+            chalk.greenBright(`Generating content map xml file completed!`),
+          )
+        }
+      }).then((msg) => {
+        console.log(msg)
+      }),
     ]
 
     parsedCategoryConfigList.forEach((config) => {
@@ -74,7 +89,10 @@ export class Builder {
               `Start to render and generate category page ${config.category}...`,
             ),
           )
-          if (cache.hasCategoryChanged(config.url, config)) {
+          if (
+            cache.hasCategoryChanged(config.url, config) ||
+            !cache.checkOutputExists(config.outputFilePath)
+          ) {
             const renderedCategoryListPageConfig =
               renderer.renderCategoryListPageConfig(
                 config,
@@ -85,6 +103,8 @@ export class Builder {
               renderedCategoryListPageConfig,
             )
             if (result === 'ok') {
+              const { html, ...rest } = renderedCategoryListPageConfig
+              cache.updateCache(renderedCategoryListPageConfig.url, rest)
               resolve(
                 chalk.greenBright(`Generating page ${config.url} completed!`),
               )
@@ -110,19 +130,25 @@ export class Builder {
                 `Start to render and generate page ${compiledPageConfig.url}...`,
               ),
             )
-            if (cache.hasContentChanged(config.url, config)) {
+            if (
+              cache.hasContentChanged(config.url, config) ||
+              !cache.checkOutputExists(config.outputFilePath)
+            ) {
               const renderedContentPageConfig =
                 renderer.renderContentPageConfig(compiledPageConfig)
 
               const result = await generator.generatePageThroughRenderedConfig(
                 renderedContentPageConfig,
               )
-              if (result === 'ok')
+              if (result === 'ok') {
+                const { html, ...rest } = renderedContentPageConfig
+                cache.updateCache(renderedContentPageConfig.url, rest)
                 resolve(
                   chalk.greenBright(
                     `Generating page ${compiledPageConfig.url} completed!`,
                   ),
                 )
+              }
             }
             resolve(
               chalk.yellowBright(
