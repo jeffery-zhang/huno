@@ -79,6 +79,21 @@ export class Builder {
       }).then((msg) => {
         console.log(msg)
       }),
+      new Promise<string>(async (resolve) => {
+        console.log(
+          chalk.yellowBright('Start to render and generate search page...'),
+        )
+        const renderedSearchPageConfig = renderer.renderSearchPageConfig()
+
+        const result = await generator.generateSearchPage(
+          renderedSearchPageConfig,
+        )
+        if (result === 'ok') {
+          resolve(chalk.greenBright('Generating search page completed!'))
+        }
+      }).then((msg) => {
+        console.log(msg)
+      }),
     ]
 
     parsedCategoryConfigList.forEach((config) => {

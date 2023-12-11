@@ -11,11 +11,20 @@ function listenSearchInput() {
   })
 }
 
+function importStyle() {
+  var styles = document.createElement('link')
+  styles.type = 'text/css'
+  styles.rel = 'stylesheet'
+  styles.href = `${window.location.protocol}//${window.location.host}/assets/css/index.css`
+  document.getElementsByTagName('head')[0].appendChild(styles)
+}
+
 async function getContentList() {
   const searchParams = new URLSearchParams(location.search)
   const keyword = searchParams.get('keyword')
   if (!keyword) return
-  const xmlText = (
+  importStyle()
+  const xmlText = await (
     await fetch(
       `${window.location.protocol}//${window.location.host}/contentMap.xml`,
     )
@@ -29,7 +38,7 @@ async function getContentList() {
       const title = content
         .querySelector('page')
         .querySelector('title').textContent
-      return title.includes(keyword)
+      return title.toLowerCase().includes(keyword.toLowerCase())
     })
     .map((content) => {
       const pageParams = content.querySelector('page')
@@ -44,15 +53,11 @@ async function getContentList() {
       }
     })
 
-  const listDomString = contentList.forEach((config) => renderListItem(config))
-  const containerDomString = `<link
-    rel="preload stylesheet"
-    crossorigin="anonymous"
-    href="{{baseUrl}}assets/css/index.css"
-    as="style"
-  />
-  <div class="list>
-    ${listDomString.join('')}
+  const listDomString = contentList
+    .map((config) => renderListItem(config))
+    .join('')
+  const containerDomString = `<div class="list" id="searchList">
+    ${listDomString}
   </div>`
 
   const main = document.getElementById('main')
@@ -76,3 +81,4 @@ function renderListItem(config) {
 }
 
 window.addEventListener('load', listenSearchInput)
+window.addEventListener('load', getContentList)
