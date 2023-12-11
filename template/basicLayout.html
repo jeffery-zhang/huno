@@ -35,9 +35,20 @@
           <a href="{{baseUrl}}" title="{{title}}">{{title}}</a>
         </div>
         <div class="menu">
-          {% for category in categories %}
+          {% for category in categories %} {% if loop.index0 < 4 %}
           <a href="{{baseUrl}}{{category.url}}">{{category.category}}</a>
-          {% endfor %}
+          {% endif %}{% endfor %} {% if categories.length > 4 %}
+          <div id="restCategories" class="rest">
+            <a> ... </a>
+            <ul class="restCategoriesList" id="restCategoriesList">
+              {% for category in categories %} {% if loop.index0 >= 4 %}
+              <li>
+                <a href="{{baseUrl}}{{category.url}}">{{category.category}}</a>
+              </li>
+              {% endif %} {% endfor %}
+            </ul>
+          </div>
+          {% endif %}
         </div>
         <div class="search">
           <input type="text" id="search" placeholder="Search..." />
@@ -48,6 +59,7 @@
     <footer class="footer">
       <span>© 2023 {{title}}</span>
     </footer>
+    <script src="{{baseUrl}}assets/js/common.js"></script>
     <script src="{{baseUrl}}assets/js/search.js"></script>
   </body>
 </html>

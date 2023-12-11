@@ -1,7 +1,6 @@
 function listenSearchInput() {
   const searchInput = document.getElementById('search')
   searchInput.addEventListener('keyup', (e) => {
-    console.log(e)
     if (e.code.toLowerCase() === 'enter') {
       const value = e.target.value
       if (value) {
@@ -20,7 +19,9 @@ function importStyle() {
 }
 
 async function getContentList() {
-  const searchParams = new URLSearchParams(location.search)
+  const pathname = window.location.pathname
+  if (!pathname.includes('search')) return
+  const searchParams = new URLSearchParams(window.location.search)
   const keyword = searchParams.get('keyword')
   if (!keyword) return
   importStyle()
