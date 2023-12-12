@@ -24,6 +24,10 @@ export class Generator {
   private _path: Path
 
   async copyAssets(): Promise<any> {
+    const inputPath = this._path.templateAssetsPath
+    if (!fs.existsSync(inputPath)) {
+      return
+    }
     const targetPath = path.join(this._path.outputPath, 'assets')
     const targetExists = fs.existsSync(targetPath)
     if (!targetExists) {
@@ -53,6 +57,10 @@ export class Generator {
   }
 
   async copyPublic(): Promise<any> {
+    const inputPath = this._path.publicPath
+    if (!fs.existsSync(inputPath)) {
+      return
+    }
     const targetPath = path.join(this._path.outputPath, 'public')
     const targetExists = fs.existsSync(targetPath)
     if (!targetExists) {
