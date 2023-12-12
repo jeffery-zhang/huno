@@ -17,13 +17,17 @@ const defaultPageParams: PageParams = {
 }
 
 export class Config {
-  constructor(env: string) {
+  constructor(env: string, projectName?: string) {
     this._env = env
+    if (projectName) {
+      this._projectName = projectName
+    }
     this.parseConfig()
   }
 
   private _configDir = 'config'
   private _configFile = 'config.yaml'
+  private _projectName = ''
   private _env: string = 'prod'
   private _config: CoreConfig = {
     contentDir: 'content',
@@ -92,7 +96,7 @@ export class Config {
     const configExists = fs.existsSync(baseConfigFilePath)
     const getEnvConfigFileName = () => {
       const [pre, ext] = this._configFile.split('.')
-      return path.join(this._configFile, `${pre}.${this.env}.${ext}`)
+      return `${pre}.${this.env}.${ext}`
     }
     const envConfigFilePath = path.join(
       path.resolve(),
@@ -111,7 +115,6 @@ export class Config {
       envConfig = yaml.parse(fs.readFileSync(envConfigFilePath, 'utf-8')) ?? {}
       this._config = lodash.merge(this._config, envConfig)
     }
-
     if (!configExists && !envConfigExists) {
       console.log(
         chalk.yellowBright(

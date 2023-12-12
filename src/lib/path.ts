@@ -17,7 +17,9 @@ export class Path extends Config {
     return path.join(this.rootPath, this.contentDir)
   }
   get outputPath(): string {
-    return path.join(this.rootPath, this.outputDir)
+    const isDev = this.env === 'dev'
+    const outputDir = isDev ? '.temp' : this.outputDir
+    return path.join(this.rootPath, outputDir)
   }
   get outputContentPath() {
     return path.join(this.outputPath, this.contentDir)

@@ -23,7 +23,7 @@ export class Cache {
     return path.join(this._cacheFilePath, this._env)
   }
 
-  readCache() {
+  private readCache() {
     const target = path.join(this.cacheTarget, 'cached.json')
     if (this.cacheExists) {
       const data = fs.readFileSync(target, 'utf-8') || '{}'
@@ -40,18 +40,21 @@ export class Cache {
   }
 
   hasContentChanged(key: string, config: ParsedPageConfig) {
-    const CachedContentConfig = this._cachedData[key]
-    return !CachedContentConfig || lodash.isEqual(CachedContentConfig, config)
+    const cachedContentConfig = this._cachedData[key]
+    const { content, ...rest } = config
+    return !cachedContentConfig || !lodash.isEqual(cachedContentConfig, rest)
   }
 
   hasCategoryChanged(key: string, config: ParsedCategoryConfig) {
     const cachedCategoryConfig = this._cachedData[key]
-    return !lodash.isEqual(cachedCategoryConfig, config)
+    return (
+      !cachedCategoryConfig || !lodash.isEqual(cachedCategoryConfig, config)
+    )
   }
 
   checkOutputExists(key: string) {
-    const outputTarget = this._cachedData[key]?.outputTarget
-    return outputTarget && fs.existsSync(outputTarget)
+    const outputFilePath = this._cachedData[key]?.outputFilePath
+    return outputFilePath && fs.existsSync(outputFilePath)
   }
 
   updateCache(key: string, cachedData: any) {

@@ -25,6 +25,10 @@ export class Generator {
 
   async copyAssets(): Promise<any> {
     const targetPath = path.join(this._path.outputPath, 'assets')
+    const targetExists = fs.existsSync(targetPath)
+    if (!targetExists) {
+      fs.mkdirSync(targetPath, { recursive: true })
+    }
     return new Promise((resolve, reject) => {
       console.log(chalk.yellowBright('Start to generate assets files...'))
       fs.cp(
@@ -51,19 +55,19 @@ export class Generator {
   }
 
   async copyPublic(): Promise<any> {
+    const targetPath = path.join(this._path.outputPath, 'public')
+    const targetExists = fs.existsSync(targetPath)
+    if (!targetExists) {
+      fs.mkdirSync(targetPath, { recursive: true })
+    }
     return new Promise((resolve, reject) => {
       console.log(chalk.yellowBright('Start to generate public files...'))
-      fs.cp(
-        this._path.publicPath,
-        this._path.outputPath,
-        { recursive: true },
-        (err) => {
-          if (err) {
-            reject(err)
-          }
-          resolve(true)
-        },
-      )
+      fs.cp(this._path.publicPath, targetPath, { recursive: true }, (err) => {
+        if (err) {
+          reject(err)
+        }
+        resolve(true)
+      })
     })
       .then(() => {
         console.log(chalk.greenBright('Generating public files completed!'))

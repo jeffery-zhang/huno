@@ -3,6 +3,7 @@ import path from 'path'
 import { globSync } from 'glob'
 import chalk from 'chalk'
 import dayjs from 'dayjs'
+import chokidar from 'chokidar'
 
 import { Template } from './template'
 import {
@@ -15,7 +16,7 @@ import {
 export class Reader extends Template {
   constructor(env: string) {
     super(env)
-    this.parseContent()
+    this.parseAllContent()
   }
 
   private _contentConfigRegexp = /\+\+\+(.*?)\+\+\+/s
@@ -132,29 +133,37 @@ export class Reader extends Template {
     return this._parsedCategoryConfigList
   }
 
-  parseContent() {
+  parseSingleFileAndContent(inputFilePath: string): ParsedPageConfig | null {
+    const options = this.readSingleContentAndStats(inputFilePath)
+    if (options) {
+      const singlePageFullParams: SinglePageFullParams = {
+        ...this.pageParams,
+        page: {
+          ...options.page,
+        },
+      }
+      return {
+        params: singlePageFullParams,
+        category: options.page.category,
+        url: options.page.url,
+        outputFilePath: options.outputFilePath,
+        inputFilePath,
+        content: options.content,
+        lastModified: options.lastModified,
+      }
+    } else {
+      return null
+    }
+  }
+
+  parseAllContent() {
     console.log(chalk.yellowBright('Start parsing content files...'))
     const mds = this.findAllContentMds()
     mds.forEach((md) => {
       const inputFilePath = path.join(this.rootPath, md)
-      const options = this.readSingleContentAndStats(inputFilePath)
-      if (options) {
-        const fullSinglePageFullParams: SinglePageFullParams = {
-          ...this.pageParams,
-          page: {
-            ...options.page,
-          },
-        }
-
-        this._parsedPageConfigList.push({
-          params: fullSinglePageFullParams,
-          category: options.page.category,
-          url: options.page.url,
-          outputFilePath: options.outputFilePath,
-          inputFilePath,
-          content: options.content,
-          lastModified: options.lastModified,
-        })
+      const result = this.parseSingleFileAndContent(inputFilePath)
+      if (result) {
+        this._parsedPageConfigList.push(result)
       }
     })
     this.categoryList = this._parsedCategoryConfigList

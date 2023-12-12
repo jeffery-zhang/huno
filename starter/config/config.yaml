@@ -1,0 +1,9 @@
+contentDir: 'content'
+outputDir: 'dist'
+pageParams:
+  {
+    baseUrl: '/',
+    title: 'Hello Huno',
+    description: 'Welcome to Huno',
+    author: 'Huno',
+  }
