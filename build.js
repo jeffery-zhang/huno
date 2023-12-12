@@ -4,11 +4,11 @@ require('esbuild')
   .build({
     entryPoints: ['src/huno.ts'],
     bundle: true,
-    outfile: 'bin/huno.js',
+    outfile: 'bin/huno.min.js',
     platform: 'node',
     target: 'node20',
     tsconfig: 'tsconfig.json',
-    minify: false,
+    minify: true,
     loader: {
       '.html': 'text',
     },
