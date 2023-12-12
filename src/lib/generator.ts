@@ -44,12 +44,10 @@ export class Generator {
       )
     })
       .then(() => {
-        console.log(chalk.greenBright('Generating assets files completed!'))
+        console.log(chalk.greenBright('Generate assets files completed!'))
       })
       .catch((err) => {
-        console.error(
-          chalk.redBright(`Generating assets files failed \n${err}`),
-        )
+        console.error(chalk.redBright(`Generate assets files failed \n${err}`))
         process.exit(1)
       })
   }
@@ -70,17 +68,15 @@ export class Generator {
       })
     })
       .then(() => {
-        console.log(chalk.greenBright('Generating public files completed!'))
+        console.log(chalk.greenBright('Generate public files completed!'))
       })
       .catch((err) => {
-        console.error(
-          chalk.redBright(`Generating public files failed \n${err}`),
-        )
+        console.error(chalk.redBright(`Generate public files failed \n${err}`))
         process.exit(1)
       })
   }
 
-  private async generateSinglePage(
+  async generateSinglePage(
     targetPath: string,
     text: string,
     filename?: string,

@@ -3,6 +3,7 @@ export interface SingleCommand {
   description: string
   action: (params?: any) => void | Promise<void>
   options?: string[][]
+  arguments?: string[][]
 }
 
 export interface CoreConfig {

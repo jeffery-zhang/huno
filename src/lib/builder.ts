@@ -39,7 +39,7 @@ export class Builder {
           renderedIndexPageConfig,
         )
         if (result === 'ok') {
-          resolve(chalk.greenBright('Generating index page completed!'))
+          resolve(chalk.greenBright('Generate index page completed!'))
         }
       }).then((msg) => {
         console.log(msg)
@@ -52,9 +52,7 @@ export class Builder {
           parsedPageConfigList,
         )
         if (result === 'ok') {
-          resolve(
-            chalk.greenBright(`Generating content map xml file completed!`),
-          )
+          resolve(chalk.greenBright(`Generate content map xml file completed!`))
         }
       }).then((msg) => {
         console.log(msg)
@@ -69,7 +67,7 @@ export class Builder {
           renderedSearchPageConfig,
         )
         if (result === 'ok') {
-          resolve(chalk.greenBright('Generating search page completed!'))
+          resolve(chalk.greenBright('Generate search page completed!'))
         }
       }).then((msg) => {
         console.log(msg)
@@ -101,7 +99,7 @@ export class Builder {
               const { html, ...rest } = renderedCategoryListPageConfig
               cache.updateCache(renderedCategoryListPageConfig.url, rest)
               resolve(
-                chalk.greenBright(`Generating page ${config.url} completed!`),
+                chalk.greenBright(`Generate page ${config.url} completed!`),
               )
             }
           }
@@ -140,7 +138,7 @@ export class Builder {
                 cache.updateCache(renderedContentPageConfig.url, rest)
                 resolve(
                   chalk.greenBright(
-                    `Generating page ${compiledPageConfig.url} completed!`,
+                    `Generate page ${compiledPageConfig.url} completed!`,
                   ),
                 )
               }

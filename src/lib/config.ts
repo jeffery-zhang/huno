@@ -17,17 +17,15 @@ const defaultPageParams: PageParams = {
 }
 
 export class Config {
-  constructor(env: string, projectName?: string) {
+  constructor(env: string) {
     this._env = env
-    if (projectName) {
-      this._projectName = projectName
+    if (env !== 'new') {
+      this.parseConfig()
     }
-    this.parseConfig()
   }
 
   private _configDir = 'config'
   private _configFile = 'config.yaml'
-  private _projectName = ''
   private _env: string = 'prod'
   private _config: CoreConfig = {
     contentDir: 'content',

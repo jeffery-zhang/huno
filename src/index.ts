@@ -1,12 +1,14 @@
 import chalk from 'chalk'
 import { program } from 'commander'
 
+import { newCmd } from './commands/new'
 import { build } from './commands/build'
 import { dev } from './commands/dev'
 import { preview } from './commands/preview'
+import { SingleCommand } from './types'
 
 const setCommand = async () => {
-  const commands = [build, dev, preview]
+  const commands: SingleCommand[] = [newCmd, build, dev, preview]
   const promises: Promise<any>[] = []
   commands.map((obj) => {
     promises.push(
@@ -21,6 +23,12 @@ const setCommand = async () => {
             obj.options.map((opt) => {
               // @ts-ignore
               cmd.option(...opt)
+            })
+          }
+          if (obj.arguments) {
+            obj.arguments.map((arg) => {
+              // @ts-ignore
+              cmd.argument(...arg)
             })
           }
 
