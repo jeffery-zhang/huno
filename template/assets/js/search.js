@@ -42,14 +42,14 @@ async function getContentList() {
       return title.toLowerCase().includes(keyword.toLowerCase())
     })
     .map((content) => {
-      const pageParams = content.querySelector('page')
+      const siteParams = content.querySelector('page')
       return {
         baseUrl: content.querySelector('baseUrl').textContent,
         page: {
-          title: pageParams.querySelector('title').textContent,
-          description: pageParams.querySelector('description').textContent,
-          url: pageParams.querySelector('url').textContent,
-          updateTime: pageParams.querySelector('updateTime').textContent,
+          title: siteParams.querySelector('title').textContent,
+          description: siteParams.querySelector('description').textContent,
+          url: siteParams.querySelector('url').textContent,
+          updateTime: siteParams.querySelector('updateTime').textContent,
         },
       }
     })
@@ -66,17 +66,17 @@ async function getContentList() {
 }
 
 function renderListItem(config) {
-  const pageParams = config.page
+  const siteParams = config.page
   return `<article class="entry">
-    <a href="${config.baseUrl}${pageParams.url}" class="link"></a>
+    <a href="${config.baseUrl}${siteParams.url}" class="link"></a>
     <header>
-      <h2>${pageParams.title}</h2>
+      <h2>${siteParams.title}</h2>
     </header>
     <div class="entry-content">
-      <p>${pageParams.description}</p>
+      <p>${siteParams.description}</p>
     </div>
     <footer>
-      <span>${pageParams.updateTime}</span>
+      <span>${siteParams.updateTime}</span>
     </footer>
   </article>`
 }

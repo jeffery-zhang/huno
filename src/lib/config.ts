@@ -4,16 +4,19 @@ import yaml from 'yaml'
 import lodash from 'lodash'
 import chalk from 'chalk'
 
-import { CoreConfig, PageParams, ParsedCategoryConfig } from '../types'
+import { CoreConfig, SiteParams, ParsedCategoryConfig } from '../types'
 
-const defaultPageParams: PageParams = {
+const defaultSiteParams: SiteParams = {
   baseUrl: '/',
   defaultLang: 'en',
   title: 'Awesome Title',
   description: 'This is an Awesome Description!',
   author: 'Huno',
-  keywords: [],
+  keywords: '',
+  subjects: [],
   categories: [],
+  unsubjectizedName: 'Unsubjectized',
+  uncategorizedName: 'Uncategorized',
 }
 
 export class Config {
@@ -35,7 +38,7 @@ export class Config {
     port: 8080,
     templateName: 'default',
     outputCategoryDir: 'category',
-    pageParams: defaultPageParams,
+    siteParams: defaultSiteParams,
   }
 
   private parseBaseUrl(url: string) {
@@ -69,10 +72,10 @@ export class Config {
   get outputCategoryDir(): string {
     return this._config.outputCategoryDir
   }
-  get pageParams(): PageParams {
-    const baseUrl = this.parseBaseUrl(this._config.pageParams.baseUrl)
+  get siteParams(): SiteParams {
+    const baseUrl = this.parseBaseUrl(this._config.siteParams.baseUrl)
     return {
-      ...this._config.pageParams,
+      ...this._config.siteParams,
       baseUrl,
     }
   }
@@ -80,7 +83,7 @@ export class Config {
     return this._config
   }
   set categoryList(categoryList: ParsedCategoryConfig[]) {
-    this._config.pageParams.categories = categoryList
+    this._config.siteParams.categories = categoryList
   }
 
   public parseConfig() {

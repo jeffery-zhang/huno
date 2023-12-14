@@ -1,4 +1,3 @@
-import path from 'path'
 import http from 'http'
 import express, { Express } from 'express'
 
@@ -17,8 +16,6 @@ export class Server {
   private _server: http.Server | null = null
 
   startServer() {
-    const isDev = this._path.env == 'dev'
-
     const app: Express = express()
     const port = this._path.port
 

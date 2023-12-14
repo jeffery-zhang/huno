@@ -1,6 +1,6 @@
 contentDir: 'content'
 outputDir: 'dist'
-pageParams:
+siteParams:
   {
     baseUrl: '/',
     title: 'Hello Huno',

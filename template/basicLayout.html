@@ -1,16 +1,19 @@
 <!DOCTYPE html>
 <html lang="{{defaultLang}}">
   <head>
-    {% if post.title %}
-    <title>{{post.title}} | {{title}}</title>
+    {% if page.title %}
+    <title>{{page.title}} | {{title}}</title>
     {% else %}
     <title>{{title}}</title>
     {% endif %}
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="{{description}}" />
-    <meta name="author" content="{{author}}" />
-    <meta name="keywords" content="{{keywords.join(',')}}" />
+    <meta
+      name="description"
+      content="{{page.description | default(description)}}"
+    />
+    <meta name="author" content="{{page.author | default(author)}}" />
+    <meta name="keywords" content="{{page.keywords | default(keywords)}}" />
     <link
       rel="shortcut icon"
       href="{{baseUrl}}favicon.ico"

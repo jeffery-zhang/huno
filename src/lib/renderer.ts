@@ -13,6 +13,7 @@ import {
   RenderedSearchPageConfig,
   SinglePageFullParams,
 } from '../types'
+import path from 'path'
 
 export class Renderer {
   constructor(template: Template) {
@@ -20,14 +21,15 @@ export class Renderer {
       throw new Error('Template is required in renderer')
     }
     this._template = template
+    nunjucks.configure(path.join(this._template.hunoRootPath, 'template'))
   }
 
   private _template: Template
 
   private renderBasicLayout(params?: SinglePageFullParams): string {
     const basicLayoutTemplate = this._template.basicLayoutTemplate
-    const pageParams = params ?? this._template.pageParams
-    return nunjucks.renderString(basicLayoutTemplate, pageParams)
+    const siteParams = params ?? this._template.siteParams
+    return nunjucks.render('basicLayout.html', siteParams)
   }
 
   private renderContentList(
@@ -37,7 +39,7 @@ export class Renderer {
     const listTemplate = this._template.listTemplate
     const listParams = configs.map((cfg) => cfg.params.page)
     return nunjucks.renderString(listTemplate, {
-      ...this._template.pageParams,
+      ...this._template.siteParams,
       list: listParams,
       category,
     })

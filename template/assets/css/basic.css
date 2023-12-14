@@ -52,7 +52,7 @@ li {
 }
 .menu a {
   padding: 0 var(--gap-md);
-  height: 32px;
+  line-height: 32px;
   font-size: var(--content-size);
   border-radius: var(--radius-sm);
   text-decoration: none;

@@ -1,55 +1,61 @@
+// 基于commander声明huno单条命令的配置
 export interface SingleCommand {
-  command: string
-  description: string
-  action: (params?: any) => void | Promise<void>
-  options?: string[][]
-  arguments?: string[][]
+  command: string // 命令名称
+  description: string // 命令描述
+  action: (params?: any) => void | Promise<void> // 命令执行的函数
+  options?: string[][] // 命令选项
+  arguments?: string[][] // 命令参数
 }
 
+// huno应用的核心配置项
 export interface CoreConfig {
-  contentDir: string
-  outputDir: string
-  templateDir: string
-  publicDir: string
-  templateName: string
-  port: number
+  contentDir: string // 文章存放的目录
+  outputDir: string // 输出目录
+  publicDir: string // 静态资源目录
+  templateDir: string // 模板目录
+  templateName: string // 模板名称
   outputCategoryDir: string
-  pageParams: PageParams
+  port: number // dev server 端口
+  previewPort?: number // preview server 端口, 未定义时为 dev server 端口
+  siteParams: SiteParams
 }
 
-export interface PageParams {
+export interface SiteParams {
   baseUrl: string
   defaultLang: string
   title: string
   description: string
   author: string
-  keywords: string[]
+  keywords: string
+  subjects: string[]
   categories: ParsedCategoryConfig[]
+  unsubjectizedName: string
+  uncategorizedName: string
   [key: string]: any
 }
 
-export interface SinglePageParams {
+export interface SingleSiteParams {
   url: string
   title?: string
   description?: string
   author?: string
   category: string
-  keywords?: string[]
+  keywords?: string
   createTime?: string
   updateTime?: string
   [key: string]: any
 }
 
-export interface SinglePageFullParams extends PageParams {
-  page?: SinglePageParams
+export interface SinglePageFullParams extends SiteParams {
+  page?: SingleSiteParams
 }
 
-export interface ListTemplateParams extends PageParams {
-  list: SinglePageParams[]
+export interface ListTemplateParams extends SiteParams {
+  list: SingleSiteParams[]
   category: string
 }
 
-export interface SingleCategoryPageParams extends PageParams {
+export interface SingleCategorySiteParams extends SiteParams {
   category: string
 }
 

@@ -3,11 +3,10 @@ import path from 'path'
 import { globSync } from 'glob'
 import chalk from 'chalk'
 import dayjs from 'dayjs'
-import chokidar from 'chokidar'
 
 import { Template } from './template'
 import {
-  SinglePageParams,
+  SingleSiteParams,
   SinglePageFullParams,
   ParsedPageConfig,
   ParsedCategoryConfig,
@@ -40,7 +39,7 @@ export class Reader extends Template {
       .replace('.md', '')
   }
 
-  private extractContentConfig(content: string): SinglePageParams | null {
+  private extractContentConfig(content: string): SingleSiteParams | null {
     const contentConfig: { [key: string]: string } = {}
     const reg = this._contentConfigRegexp
     const match = content.match(reg)
@@ -50,7 +49,7 @@ export class Reader extends Template {
         const [key, value]: string[] = line.split('=')
         contentConfig[key.trim()] = value?.trim() ?? ''
       })
-      return contentConfig as SinglePageParams
+      return contentConfig as SingleSiteParams
     } else return null
   }
 
@@ -64,7 +63,7 @@ export class Reader extends Template {
   }
 
   private readSingleContentAndStats(inputFilePath: string): {
-    page: SinglePageParams
+    page: SingleSiteParams
     outputFilePath: string
     content: string
     lastModified: number
@@ -137,7 +136,7 @@ export class Reader extends Template {
     const options = this.readSingleContentAndStats(inputFilePath)
     if (options) {
       const singlePageFullParams: SinglePageFullParams = {
-        ...this.pageParams,
+        ...this.siteParams,
         page: {
           ...options.page,
         },
