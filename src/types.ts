@@ -14,84 +14,40 @@ export interface CoreConfig {
   publicDir: string // 静态资源目录
   templateDir: string // 模板目录
   templateName: string // 模板名称
-  outputCategoryDir: string
+  subjectDir?: string
+  categoryDir?: string
   port: number // dev server 端口
   previewPort?: number // preview server 端口, 未定义时为 dev server 端口
-  siteParams: SiteParams
 }
 
+// 页面基本参数
 export interface SiteParams {
-  baseUrl: string
-  defaultLang: string
-  title: string
-  description: string
-  author: string
-  keywords: string
-  subjects: string[]
-  categories: ParsedCategoryConfig[]
-  unsubjectizedName: string
-  uncategorizedName: string
-  [key: string]: any
-}
-
-export interface SingleSiteParams {
-  url: string
+  baseUrl: string // url的前缀, 必传
   title?: string
   description?: string
   author?: string
-  category: string
+  keywords?: string
+  page?: SinglePageParams
+  [key: string]: any
+}
+
+// 页面拓展参数
+export interface SinglePageParams {
+  url: string // 页面对应url
+  title?: string
+  description?: string
+  author?: string
+  category?: string
   keywords?: string
   createTime?: string
   updateTime?: string
   [key: string]: any
 }
 
-export interface SinglePageFullParams extends SiteParams {
-  page?: SingleSiteParams
-}
-
-export interface ListTemplateParams extends SiteParams {
-  list: SingleSiteParams[]
-  category: string
-}
-
-export interface SingleCategorySiteParams extends SiteParams {
-  category: string
-}
-
+// 读取的页面配置
 export interface ParsedPageConfig {
-  params: SinglePageFullParams
-  url: string
+  params: SiteParams
   outputFilePath: string
   inputFilePath: string
-  content: string
   lastModified: number
-  category: string
-}
-
-export interface ParsedCategoryConfig {
-  category: string
-  outputFilePath: string
-  url: string
-}
-
-export interface CompiledPageConfig extends Omit<ParsedPageConfig, 'content'> {
-  article: string
-}
-
-export interface RenderedIndexPageConfig {
-  html: string
-}
-
-export interface RenderedSearchPageConfig {
-  html: string
-}
-
-export interface RenderedCategoryPageConfig extends ParsedCategoryConfig {
-  html: string
-}
-
-export interface RenderedPageConfig
-  extends Omit<ParsedPageConfig, 'content' | 'params'> {
-  html: string
 }

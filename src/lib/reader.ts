@@ -6,7 +6,7 @@ import dayjs from 'dayjs'
 
 import { Template } from './template'
 import {
-  SingleSiteParams,
+  SinglePageParams,
   SinglePageFullParams,
   ParsedPageConfig,
   ParsedCategoryConfig,
@@ -39,7 +39,7 @@ export class Reader extends Template {
       .replace('.md', '')
   }
 
-  private extractContentConfig(content: string): SingleSiteParams | null {
+  private extractContentConfig(content: string): SinglePageParams | null {
     const contentConfig: { [key: string]: string } = {}
     const reg = this._contentConfigRegexp
     const match = content.match(reg)
@@ -49,7 +49,7 @@ export class Reader extends Template {
         const [key, value]: string[] = line.split('=')
         contentConfig[key.trim()] = value?.trim() ?? ''
       })
-      return contentConfig as SingleSiteParams
+      return contentConfig as SinglePageParams
     } else return null
   }
 
@@ -63,7 +63,7 @@ export class Reader extends Template {
   }
 
   private readSingleContentAndStats(inputFilePath: string): {
-    page: SingleSiteParams
+    page: SinglePageParams
     outputFilePath: string
     content: string
     lastModified: number

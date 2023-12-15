@@ -50,4 +50,8 @@ huno 基于模板来渲染基本页面, 模板可以直接用 huno 应用内置(
 
 ### Renderer
 
-利用 nunjucks 将模板
+利用 nunjucks 将模板渲染为真实的 html 字符串
+
+### Generator
+
+将页面配置和渲染的 html 字符串写入对应位置的页面文件中
