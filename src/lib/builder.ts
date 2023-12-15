@@ -2,8 +2,8 @@ import chalk from 'chalk'
 
 import { Cache } from '../lib/cache'
 import { Reader } from '../lib/reader'
-import { Compiler } from '../lib/compiler'
-import { Renderer } from '../lib/renderer'
+import { Compiler } from './renderer'
+import { Renderer } from './renderer1'
 import { Generator } from '../lib/generator'
 
 export class Builder {

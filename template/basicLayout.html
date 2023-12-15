@@ -1,69 +1,32 @@
-<!DOCTYPE html>
-<html lang="{{defaultLang}}">
-  <head>
-    {% if page.title %}
-    <title>{{page.title}} | {{title}}</title>
-    {% else %}
-    <title>{{title}}</title>
-    {% endif %}
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="{{page.description | default(description)}}"
-    />
-    <meta name="author" content="{{page.author | default(author)}}" />
-    <meta name="keywords" content="{{page.keywords | default(keywords)}}" />
-    <link
-      rel="shortcut icon"
-      href="{{baseUrl}}favicon.ico"
-      type="image/x-icon"
-    />
-    <link
-      rel="stylesheet"
-      href="{{baseUrl}}assets/css/normalize.min.css"
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    />
-    <link
-      rel="preload stylesheet"
-      crossorigin="anonymous"
-      href="{{baseUrl}}assets/css/basic.css"
-      as="style"
-    />
-  </head>
-  <body id="top">
-    <header class="header">
-      <nav class="nav">
-        <div class="logo">
-          <a href="{{baseUrl}}" title="{{title}}">{{title}}</a>
-        </div>
-        <div class="menu">
-          {% for category in categories %} {% if loop.index0 < 4 %}
-          <a href="{{baseUrl}}{{category.url}}">{{category.category}}</a>
-          {% endif %}{% endfor %} {% if categories.length > 4 %}
-          <div id="restCategories" class="rest">
-            <a> ... </a>
-            <ul class="restCategoriesList" id="restCategoriesList">
-              {% for category in categories %} {% if loop.index0 >= 4 %}
-              <li>
-                <a href="{{baseUrl}}{{category.url}}">{{category.category}}</a>
-              </li>
-              {% endif %} {% endfor %}
-            </ul>
-          </div>
-          {% endif %}
-        </div>
-        <div class="search">
-          <input type="text" id="search" placeholder="Search..." />
-        </div>
-      </nav>
-    </header>
-    <main id="main" class="main"></main>
-    <footer class="footer">
-      <span>© 2023 {{title}}</span>
-    </footer>
-    <script src="{{baseUrl}}assets/js/common.js"></script>
-    <script src="{{baseUrl}}assets/js/search.js"></script>
-  </body>
-</html>
+<header class="header">
+  <nav class="nav">
+    <div class="logo">
+      <a href="{{baseUrl}}" title="{{title}}">{{title}}</a>
+    </div>
+    <div class="menu">
+      {% for category in categories %} {% if loop.index0 < 4 %}
+      <a href="{{baseUrl}}{{category.url}}">{{category.category}}</a>
+      {% endif %}{% endfor %} {% if categories.length > 4 %}
+      <div id="restCategories" class="rest">
+        <a> ... </a>
+        <ul class="restCategoriesList" id="restCategoriesList">
+          {% for category in categories %} {% if loop.index0 >= 4 %}
+          <li>
+            <a href="{{baseUrl}}{{category.url}}">{{category.category}}</a>
+          </li>
+          {% endif %} {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+    </div>
+    <div class="search">
+      <input type="text" id="search" placeholder="Search..." />
+    </div>
+  </nav>
+</header>
+<main id="main" class="main"></main>
+<footer class="footer">
+  <span>© 2023 {{title}}</span>
+</footer>
+<script src="{{baseUrl}}assets/js/common.js"></script>
+<script src="{{baseUrl}}assets/js/search.js"></script>

@@ -1,14 +1,16 @@
 import chalk from 'chalk'
 import { program } from 'commander'
 
-import { newCmd } from './commands/new'
-import { build } from './commands/build'
-import { dev } from './commands/dev'
-import { preview } from './commands/preview'
+// import { newCmd } from './commands/new'
+// import { build } from './commands/build'
+// import { dev } from './commands/dev'
+// import { preview } from './commands/preview'
+import { test } from './commands/test'
 import { SingleCommand } from './types'
 
 const setCommand = async () => {
-  const commands: SingleCommand[] = [newCmd, build, dev, preview]
+  // const commands: SingleCommand[] = [newCmd, build, dev, preview]
+  const commands: SingleCommand[] = [test]
   const promises: Promise<any>[] = []
   commands.map((obj) => {
     promises.push(

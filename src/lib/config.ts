@@ -12,12 +12,14 @@ const defaultCoreConfig = {
   templateDir: 'template',
   publicDir: 'public',
   templateName: 'default',
+  outputSearchDir: 'search',
+  outputCategoryDir: 'category',
   port: 8080,
 }
 const defaultSiteParams: SiteParams = {
   baseUrl: '/',
   defaultLang: 'en',
-  title: 'Awesome Title',
+  siteTitle: 'Awesome Title',
   description: 'This is an Awesome WebSite!',
   author: 'Huno',
   keywords: '',
@@ -39,13 +41,6 @@ export class Config {
   private _config: CoreConfig = defaultCoreConfig
   private _siteParams: SiteParams = defaultSiteParams
 
-  private parseBaseUrl(url: string) {
-    if (!url.endsWith('/')) {
-      return url + '/'
-    }
-    return url
-  }
-
   get env(): string {
     return this._env
   }
@@ -64,8 +59,17 @@ export class Config {
   get templateName(): string {
     return this._config.templateName
   }
+  get outputSearchDir(): string | null {
+    return this._config.outputSearchDir || null
+  }
+  get outputCategoryDir(): string | null {
+    return this._config.outputCategoryDir || null
+  }
   get port(): number {
     return this._config.port
+  }
+  get previewPort(): number {
+    return this._config.previewPort ?? this._config.port
   }
   get coreConfig() {
     return this._config
@@ -78,7 +82,31 @@ export class Config {
     }
   }
 
-  private parseCoreConfig() {}
+  private parseBaseUrl(url: string) {
+    if (!url.endsWith('/')) {
+      return url + '/'
+    }
+    return url
+  }
+
+  private parseCoreConfig() {
+    console.log(chalk.yellowBright('Start parsing config files...'))
+    const configFilePath = path.join(
+      path.resolve(),
+      this._configDir,
+      this._configFile,
+    )
+    const configFileExists = fs.existsSync(configFilePath)
+    if (configFileExists) {
+      const config = yaml.parse(fs.readFileSync(configFilePath, 'utf-8')) ?? {}
+      this._config = lodash.merge(this._config, config)
+    } else {
+      console.log(
+        chalk.yellowBright('No exist config file, use default config'),
+      )
+    }
+    console.log(chalk.greenBright('Parse config files completed!'))
+  }
 
   private parseSiteParams() {
     console.log(chalk.yellowBright('Start parsing site params files...'))
@@ -114,7 +142,7 @@ export class Config {
     if (!siteParamsFileExists && !envSiteParamsExists) {
       console.log(
         chalk.yellowBright(
-          'No existing site params files found. Huno is now building with default site params...',
+          'No exist site params files found, use default site params...',
         ),
       )
     } else {

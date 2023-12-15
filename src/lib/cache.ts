@@ -3,7 +3,7 @@ import fs from 'fs'
 import lodash from 'lodash'
 import chalk from 'chalk'
 
-import { CoreConfig, ParsedCategoryConfig, ParsedPageConfig } from '../types'
+import { CoreConfig, PageConfig } from '../types'
 
 export class Cache {
   constructor(env: string) {
@@ -39,22 +39,13 @@ export class Cache {
     fs.writeFileSync(target, JSON.stringify(this._cachedData), 'utf-8')
   }
 
-  hasContentChanged(key: string, config: ParsedPageConfig) {
+  hasPageChanged(key: string, config: PageConfig) {
     const cachedContentConfig = this._cachedData[key]
-    const { content, ...rest } = config
-    return !cachedContentConfig || !lodash.isEqual(cachedContentConfig, rest)
+    return !cachedContentConfig || !lodash.isEqual(cachedContentConfig, config)
   }
 
-  hasCategoryChanged(key: string, config: ParsedCategoryConfig) {
-    const cachedCategoryConfig = this._cachedData[key]
-    return (
-      !cachedCategoryConfig || !lodash.isEqual(cachedCategoryConfig, config)
-    )
-  }
-
-  checkOutputExists(key: string) {
-    const outputFilePath = this._cachedData[key]?.outputFilePath
-    return outputFilePath && fs.existsSync(outputFilePath)
+  checkOutputExists(outputFilePath: string) {
+    return fs.existsSync(outputFilePath)
   }
 
   updateCache(key: string, cachedData: any) {

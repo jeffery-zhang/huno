@@ -1,17 +1,11 @@
-import path from 'path'
+import path, { resolve } from 'path'
 import fs from 'fs'
 import chalk from 'chalk'
 import xml2js from 'xml2js'
 
 import { Path } from './path'
 import { Cache } from './cache'
-import {
-  ParsedPageConfig,
-  RenderedCategoryPageConfig,
-  RenderedIndexPageConfig,
-  RenderedPageConfig,
-  RenderedSearchPageConfig,
-} from '../types'
+import { PageConfig } from '../types'
 
 export class Generator {
   constructor(path: Path) {
@@ -23,7 +17,36 @@ export class Generator {
 
   private _path: Path
 
-  async copyAssets(): Promise<any> {
+  private async generateSinglePage(
+    targetPath: string,
+    text: string,
+    filename?: string,
+  ) {
+    const targetExists = fs.existsSync(targetPath)
+    if (!targetExists) {
+      fs.mkdirSync(targetPath, { recursive: true })
+    }
+    const targetFilePath = path.join(targetPath, filename ?? 'index.html')
+
+    return new Promise<'ok' | 'error'>((resolve) => {
+      const writeStream = fs.createWriteStream(targetFilePath)
+
+      writeStream.write(text, 'utf-8')
+
+      writeStream.on('finish', () => {
+        resolve('ok')
+      })
+
+      writeStream.on('error', (error) => {
+        console.error(chalk.redBright(`Generate ${targetPath} error\n${error}`))
+        resolve('error')
+      })
+
+      writeStream.end()
+    })
+  }
+
+  public async copyAssets(): Promise<any> {
     const inputPath = this._path.templateAssetsPath
     if (!fs.existsSync(inputPath)) {
       return
@@ -56,7 +79,7 @@ export class Generator {
       })
   }
 
-  async copyPublic(): Promise<any> {
+  public async copyPublic(): Promise<any> {
     const inputPath = this._path.publicPath
     if (!fs.existsSync(inputPath)) {
       return
@@ -84,79 +107,16 @@ export class Generator {
       })
   }
 
-  async generateSinglePage(
-    targetPath: string,
-    text: string,
-    filename?: string,
-  ) {
-    const targetExists = fs.existsSync(targetPath)
-    if (!targetExists) {
-      fs.mkdirSync(targetPath, { recursive: true })
-    }
-    const targetFilePath = path.join(targetPath, filename ?? 'index.html')
-
-    return new Promise<'ok'>((resolve, reject) => {
-      const writeStream = fs.createWriteStream(targetFilePath)
-
-      writeStream.write(text, 'utf-8')
-
-      writeStream.on('finish', () => {
-        resolve('ok')
-      })
-
-      writeStream.on('error', (error) => {
-        reject(error)
-      })
-
-      writeStream.end()
-    }).catch((error) => {
-      console.error(chalk.redBright(`Generate ${targetPath} error\n${error}`))
-      process.exit(1)
-    })
-  }
-
-  async generateIndexPage(config: RenderedIndexPageConfig) {
-    const targetPath = this._path.outputPath
-    const result = await this.generateSinglePage(targetPath, config.html)
-    if (result) {
-      return result
-    }
-  }
-
-  async generateSearchPage(config: RenderedSearchPageConfig) {
-    const targetPath = path.join(this._path.outputPath, 'search')
-    const result = await this.generateSinglePage(targetPath, config.html)
-    if (result) {
-      return result
-    }
-  }
-
-  async generatePageThroughRenderedConfig(config: RenderedPageConfig) {
-    const result = await this.generateSinglePage(
-      config.outputFilePath,
-      config.html,
-    )
-
+  public async generatePageByPageConfig(config: PageConfig, html: string) {
+    const result = await this.generateSinglePage(config.outputFilePath, html)
     return result
   }
 
-  async generateCategoryPage(config: RenderedCategoryPageConfig) {
-    const result = await this.generateSinglePage(
-      config.outputFilePath,
-      config.html,
-    )
-
-    return result
-  }
-
-  async generateContentMapXml(configs: ParsedPageConfig[]) {
+  public async generateContentMapXml(configs: PageConfig[]) {
     const builder = new xml2js.Builder()
-    const data = configs.map((config) => {
-      const { content, ...rest } = config
-      return rest
-    })
+
     const xmlData = builder.buildObject({
-      contentMap: { content: data },
+      contentMap: { content: configs },
     })
 
     const result = await this.generateSinglePage(

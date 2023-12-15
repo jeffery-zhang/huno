@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="{{defaultLang}}">
+  <head>
+    {% if title %}
+    <title>{{title}} | {{siteTitle}}</title>
+    {% else %}
+    <title>{{siteTitle}}</title>
+    {% endif %}
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="{{page.description | default(description)}}"
+    />
+    <meta name="author" content="{{page.author | default(author)}}" />
+    <meta name="keywords" content="{{page.keywords | default(keywords)}}" />
+    <link
+      rel="shortcut icon"
+      href="{{baseUrl}}favicon.ico"
+      type="image/x-icon"
+    />
+    <link
+      rel="stylesheet"
+      href="{{baseUrl}}assets/css/normalize.min.css"
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link
+      rel="preload stylesheet"
+      crossorigin="anonymous"
+      href="{{baseUrl}}assets/css/basic.css"
+      as="style"
+    />
+  </head>
+  <body id="top">
+    {% include "basicLayout.html" %}
+  </body>
+</html>

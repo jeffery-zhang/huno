@@ -41,51 +41,6 @@ export class Template extends Path {
     return tplExists ? fs.readFileSync(tplPath, 'utf-8') : null
   }
 
-  get basicLayoutTemplate(): string {
-    try {
-      return fs.readFileSync(
-        path.join(this.templatePath, 'basicLayout.html'),
-        'utf-8',
-      )
-    } catch (error) {
-      console.error(
-        chalk.redBright(
-          `BasicLayout of template ${this.templateName} not found!\n${error}`,
-        ),
-      )
-      process.exit(1)
-    }
-  }
-
-  get listTemplate(): string {
-    try {
-      return fs.readFileSync(path.join(this.templatePath, 'list.html'), 'utf-8')
-    } catch (error) {
-      console.error(
-        chalk.redBright(
-          `List of template ${this.templateName} not found!\n${error}`,
-        ),
-      )
-      process.exit(1)
-    }
-  }
-
-  get contentTemplate(): string {
-    try {
-      return fs.readFileSync(
-        path.join(this.templatePath, 'article.html'),
-        'utf-8',
-      )
-    } catch (error) {
-      console.error(
-        chalk.redBright(
-          `Content of template ${this.templateName} not found!\n${error}`,
-        ),
-      )
-      process.exit(1)
-    }
-  }
-
   get markupTemplateList(): MarkupTemplateItem[] {
     return this._markupTemplateList
   }

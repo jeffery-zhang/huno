@@ -44,13 +44,9 @@ huno 基于模板来渲染基本页面, 模板可以直接用 huno 应用内置(
 
 用于读取项目中的内容并生成页面配置项
 
-### Compiler
-
-利用 marked 编译 md 文件内容为 html
-
 ### Renderer
 
-利用 nunjucks 将模板渲染为真实的 html 字符串
+利用 marked 编译 md 文件内容为 html, 利用 nunjucks 将模板渲染为完整的 html 字符串
 
 ### Generator
 

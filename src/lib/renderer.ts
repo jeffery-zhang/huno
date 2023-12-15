@@ -1,107 +1,76 @@
-import nunjucks from 'nunjucks'
-import * as cheerio from 'cheerio'
 import chalk from 'chalk'
+import { marked } from 'marked'
+import nunjucks from 'nunjucks'
 
 import { Template } from './template'
-import {
-  CompiledPageConfig,
-  ParsedCategoryConfig,
-  ParsedPageConfig,
-  RenderedCategoryPageConfig,
-  RenderedIndexPageConfig,
-  RenderedPageConfig,
-  RenderedSearchPageConfig,
-  SinglePageFullParams,
-} from '../types'
-import path from 'path'
+import { PageConfig } from '../types'
 
 export class Renderer {
   constructor(template: Template) {
     if (!template) {
-      throw new Error('Template is required in renderer')
+      throw new Error('Template is required in compiler')
     }
     this._template = template
-    nunjucks.configure(path.join(this._template.hunoRootPath, 'template'))
+    nunjucks.configure(this._template.templatePath)
+    this.generateMarkedRenderer()
   }
 
   private _template: Template
+  private _markupArgumentsReg = /\${arguments\[(\d+)\]}/g
 
-  private renderBasicLayout(params?: SinglePageFullParams): string {
-    const basicLayoutTemplate = this._template.basicLayoutTemplate
-    const siteParams = params ?? this._template.siteParams
-    return nunjucks.render('basicLayout.html', siteParams)
+  private replaceSingleMarkupTemplateArguments(
+    tpl: string,
+    variables: IArguments,
+  ): string {
+    const result = tpl.replace(this._markupArgumentsReg, (match, num) => {
+      const index = parseInt(num)
+      return variables[index]
+    })
+    return result
   }
 
-  private renderContentList(
-    configs: ParsedPageConfig[],
-    category?: string,
-  ): string {
-    const listTemplate = this._template.listTemplate
-    const listParams = configs.map((cfg) => cfg.params.page)
-    return nunjucks.renderString(listTemplate, {
-      ...this._template.siteParams,
-      list: listParams,
-      category,
+  private generateMarkedRenderer() {
+    const that = this
+    const rendererList = this._template.markupTemplateList.map(
+      ({ name, template }) => {
+        const rendererFunction = function () {
+          const variables = arguments
+          return that.replaceSingleMarkupTemplateArguments(template, variables)
+        }
+        return [name, rendererFunction]
+      },
+    )
+    marked.use({
+      renderer: Object.fromEntries(rendererList),
     })
   }
 
-  private renderSingleContentContainer(params: SinglePageFullParams): string {
-    const containerTemplate = this._template.contentTemplate
-    return nunjucks.renderString(containerTemplate, params)
-  }
-
-  private renderSingleContent(
-    params: SinglePageFullParams,
-    tpl: string,
-  ): string {
-    return nunjucks.renderString(tpl, params)
-  }
-
-  renderIndexPageConfig(configs: ParsedPageConfig[]): RenderedIndexPageConfig {
+  public compileSinglePageContent(
+    content: string,
+    inputFilePath?: string,
+  ): string | null {
     try {
-      const $ = cheerio.load(this.renderBasicLayout())
-      const listDom = $(this.renderContentList(configs))
-      $('main#main').append(listDom)
-      return {
-        html: $.html(),
-      }
+      const article = marked(content) as string
+      return article
     } catch (error) {
-      console.error(chalk.redBright(`Render index page error\n${error}`))
-      process.exit(1)
+      console.error(
+        chalk.redBright(
+          `Compile ${inputFilePath || 'content'} error\n${error}`,
+        ),
+      )
+      return null
     }
   }
 
-  renderSearchPageConfig(): RenderedSearchPageConfig {
-    return {
-      html: this.renderBasicLayout(),
-    }
-  }
-
-  renderContentPageConfig(config: CompiledPageConfig): RenderedPageConfig {
-    const $ = cheerio.load(this.renderBasicLayout(config.params))
-    const container = $(this.renderSingleContentContainer(config.params))
-    const article = $(this.renderSingleContent(config.params, config.article))
-    $('main#main').append(container)
-    $('div#postContent').append(article)
-    const { article: _, ...rest } = config
-    return {
-      ...rest,
-      html: $.html(),
-    }
-  }
-
-  renderCategoryListPageConfig(
-    parsedCategoryConfig: ParsedCategoryConfig,
-    configs: ParsedPageConfig[],
-  ): RenderedCategoryPageConfig {
-    const $ = cheerio.load(this.renderBasicLayout())
-    const listDom = $(
-      this.renderContentList(configs, parsedCategoryConfig.category),
-    )
-    $('main#main').append(listDom)
-    return {
-      ...parsedCategoryConfig,
-      html: $.html(),
+  public renderPageWithPageConfig(config: PageConfig): string | null {
+    try {
+      const html = nunjucks.render('index.html', config.params)
+      return html
+    } catch (error) {
+      console.error(
+        chalk.redBright(`Render ${config.outputFilePath} error\n${error}`),
+      )
+      return null
     }
   }
 }
