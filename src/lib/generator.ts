@@ -4,7 +4,6 @@ import chalk from 'chalk'
 import xml2js from 'xml2js'
 
 import { Path } from './path'
-import { Cache } from './cache'
 import { PageConfig } from '../types'
 
 export class Generator {

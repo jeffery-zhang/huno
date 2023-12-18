@@ -121,7 +121,6 @@ export class Reader extends Template {
 
   private parseCategoryConfigList() {
     const categories = this.siteParams.categories ?? []
-    console.log(this.outputCategoryDir)
     if (categories.length === 0 || !this.outputCategoryPath) return
 
     categories.forEach((category) => {

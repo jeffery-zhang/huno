@@ -3,7 +3,7 @@ import fs from 'fs'
 import lodash from 'lodash'
 import chalk from 'chalk'
 
-import { CoreConfig, PageConfig } from '../types'
+import { CoreConfig, PageConfig, SiteParams } from '../types'
 
 export class Cache {
   constructor(env: string) {
@@ -31,7 +31,7 @@ export class Cache {
     }
   }
 
-  writeCache() {
+  public writeCache() {
     if (!this.cacheExists) {
       fs.mkdirSync(this.cacheTarget, { recursive: true })
     }
@@ -39,25 +39,49 @@ export class Cache {
     fs.writeFileSync(target, JSON.stringify(this._cachedData), 'utf-8')
   }
 
-  hasPageChanged(key: string, config: PageConfig) {
+  public hasPageChanged(key: string, config: PageConfig) {
     const cachedContentConfig = this._cachedData[key]
     return !cachedContentConfig || !lodash.isEqual(cachedContentConfig, config)
   }
 
-  checkOutputExists(outputFilePath: string) {
+  public checkOutputExists(outputFilePath: string) {
     return fs.existsSync(outputFilePath)
   }
 
-  updateCache(key: string, cachedData: any) {
+  public updateCache(key: string, cachedData: any) {
     this._cachedData[key] = cachedData
   }
 
-  updateCoreConfig(coreConfig: CoreConfig) {
+  public updateCoreConfig(coreConfig: CoreConfig) {
     const formerConfig = this._cachedData.coreConfig
     if (!formerConfig || !lodash.isEqual(formerConfig, coreConfig)) {
-      console.log(chalk.yellowBright('Detected config files changed...'))
+      console.log(chalk.yellowBright('Detected config file changed...'))
+      if (this._cachedData.siteParams) {
+        this._cachedData = {
+          coreConfig,
+          siteParams: this._cachedData.siteParams,
+        }
+        return
+      }
       this._cachedData = {
         coreConfig,
+      }
+    }
+  }
+
+  public updateSiteParams(siteParams: SiteParams) {
+    const formerParams = this._cachedData.siteParams
+    if (!formerParams || !lodash.isEqual(formerParams, siteParams)) {
+      console.log(chalk.yellowBright('Detected site params files changed...'))
+      if (this._cachedData.coreConfig) {
+        this._cachedData = {
+          siteParams,
+          coreConfig: this._cachedData.coreConfig,
+        }
+        return
+      }
+      this._cachedData = {
+        siteParams,
       }
     }
   }

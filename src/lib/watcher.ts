@@ -1,7 +1,8 @@
+import lodash from 'lodash'
 import chokidar from 'chokidar'
+import chalk from 'chalk'
 
 import { Reader } from './reader'
-import chalk from 'chalk'
 
 export class Watcher {
   constructor(reader: Reader) {
@@ -13,33 +14,20 @@ export class Watcher {
 
   private _reader: Reader
   private _watcher: chokidar.FSWatcher | null = null
-  private _callbackList: (() => Promise<void>)[] = []
 
   startWatch(callback: (filePath: string) => Promise<void>) {
     try {
-      this._watcher = chokidar.watch(this._reader.contentPath)
-      this.loopCallback()
-      this._watcher.on('all', async (e, filePath) => {
+      const debounceCallback = lodash.debounce(async (e, filePath) => {
         if (e === 'change' || e === 'add') {
           console.log(chalk.yellowBright(`${filePath} has changed...`))
-          this._callbackList.push(async () => await callback(filePath))
+          await callback(filePath)
         }
-      })
+      }, 1000)
+      this._watcher = chokidar.watch(this._reader.contentPath)
+      this._watcher.on('all', debounceCallback)
     } catch (error) {
       console.log(chalk.redBright(`Watch files change error\n${error}`))
       process.exit(1)
     }
-  }
-
-  loopCallback() {
-    setInterval(async () => {
-      if (this._callbackList.length > 0) {
-        const callback = this._callbackList.pop()
-        if (callback) {
-          await callback()
-          this._callbackList = []
-        }
-      }
-    }, 1000)
   }
 }

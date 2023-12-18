@@ -43,7 +43,7 @@ export class Path extends Config {
     return path.join(this.hunoRootPath, 'template')
   }
   get templatePath() {
-    if (this.templateName === 'default' || !this.templateName) {
+    if (!this.templateName || this.templateName === 'default') {
       return this.defaultTemplatePath
     } else {
       return path.join(this.customTemplatePath, this.templateName)

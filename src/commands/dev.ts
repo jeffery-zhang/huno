@@ -1,13 +1,16 @@
+import chalk from 'chalk'
 import { Builder } from '../lib/builder'
-import { Reader } from '../lib/reader'
 import { Server } from '../lib/server'
 import { Watcher } from '../lib/watcher'
 import { SingleCommand } from '../types'
 
 const action = async () => {
   const builder = new Builder('dev')
-  await builder.run()
-  const reader = new Reader('dev')
+  const reader = builder.reader
+  if (!reader) {
+    console.log(chalk.redBright('Start dev server failed...'))
+    process.exit(1)
+  }
   const server = new Server(reader)
   const watcher = new Watcher(reader)
   server.startServer()
