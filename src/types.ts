@@ -28,6 +28,7 @@ export interface SiteParams {
   author?: string
   keywords?: string
   categories?: string[] // 分类列表
+  _coreConfig?: CoreConfig // 核心配置
   [key: string]: any
 }
 

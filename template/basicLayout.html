@@ -1,18 +1,43 @@
-<header class="header">
-  <nav class="nav">
-    <div class="logo">
-      <a href="{{baseUrl}}" title="{{title}}">{{title}}</a>
+<header class="h-16 bg-base-100">
+  <nav class="md:container md:mx-auto h-full flex justify-between items-center">
+    <div>
+      <a href="{{baseUrl}}" title="{{siteTitle}}">{{siteTitle}}</a>
     </div>
-    <div class="menu">
+    <div class="hidden flex-1 md:flex max-w-lg flex items-center gap-4">
       {% for category in categories %} {% if loop.index0 < 4 %}
-      <a href="{{baseUrl}}{{category.url}}">{{category.category}}</a>
+      <div
+        class="flex items-center px-4 py-2 rounded hover:bg-primary hover:text-primary-content cursor-pointer"
+      >
+        <a
+          href="{{baseUrl}}{{_coreConfig.outputCategoryDir}}/{{category | urlencode}}"
+          title="{{category}}"
+          >{{category}}</a
+        >
+      </div>
       {% endif %}{% endfor %} {% if categories.length > 4 %}
-      <div id="restCategories" class="rest">
+      <div
+        class="flex items-center px-4 py-2 rounded hover:bg-primary hover:text-primary-content cursor-pointer"
+        x-data="{ show: false }"
+        x-ref="rest"
+        @mouseenter="show = true"
+        @mouseleave="show = false"
+      >
         <a> ... </a>
-        <ul class="restCategoriesList" id="restCategoriesList">
+        <ul
+          x-show="show"
+          x-anchor.bottom-start="$refs.rest"
+          x-transition
+          class="bg-base-100 p-2 rounded-md shadow-xl"
+        >
           {% for category in categories %} {% if loop.index0 >= 4 %}
-          <li>
-            <a href="{{baseUrl}}{{category.url}}">{{category.category}}</a>
+          <li
+            class="flex items-center px-4 py-2 rounded text-base-content hover:bg-primary hover:text-primary-content cursor-pointer"
+          >
+            <a
+              href="{{baseUrl}}{{_coreConfig.outputCategoryDir}}/{{category | urlencode}}"
+              title="{{category}}"
+              >{{category}}</a
+            >
           </li>
           {% endif %} {% endfor %}
         </ul>
@@ -24,9 +49,8 @@
     </div>
   </nav>
 </header>
-<main id="main" class="main"></main>
-<footer class="footer">
-  <span>© 2023 {{title}}</span>
+<main></main>
+<footer class="h-16 flex justify-center items-center">
+  <span class="text-neutral-content text-sm">© 2023 {{siteTitle}}</span>
 </footer>
-<script src="{{baseUrl}}assets/js/common.js"></script>
 <script src="{{baseUrl}}assets/js/search.js"></script>
