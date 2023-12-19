@@ -1,27 +1,21 @@
-<link
-  rel="preload stylesheet"
-  crossorigin="anonymous"
-  href="{{baseUrl}}assets/css/index.css"
-  as="style"
-/>
-{% if category %}
-<div class="category">
-  <h2>{{category}}</h2>
-</div>
-{% endif %}
-<div class="list">
-  {% for item in list %}
-  <article class="entry">
-    <a href="{{baseUrl}}{{item.url}}" class="link"></a>
-    <header>
-      <h2>{{item.title}}</h2>
-    </header>
-    <div class="entry-content">
-      <p>{{item.description}}</p>
-    </div>
-    <footer>
-      <span>{{item.updateTime}}</span>
-    </footer>
-  </article>
-  {% endfor %}
+<div>
+  {% if category %}
+  <div class="divider divider-primary">{{category}}</div>
+  {% endif %} {% if list|length > 0 %}
+  <ul>
+    {% for item in list %}
+    {% if type === 'index' %}
+    {% if loop.index0 < 10 %}
+    <li>
+      <a href="{{item.url}}">{{item.title}}</a>
+    </li>
+    {% endif %}
+    {% else %}
+    <li>
+      <a href="{{item.url}}">{{item.title}}</a>
+    </li>
+    {% endif %}
+    {% endfor %}
+  </ul>
+  {% endif %}
 </div>

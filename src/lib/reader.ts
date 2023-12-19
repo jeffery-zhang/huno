@@ -105,11 +105,13 @@ export class Reader extends Template {
     let contentPageList: SinglePageParams[] = []
     if (condition && condition.key && condition.value) {
       contentPageList = this.parsedContentConfigList
-        .map((config) => config.config.params)
+        .map((config) => config.config)
         .filter(
-          (params) =>
+          ({ params }) =>
             params[condition.key as keyof SinglePageParams] === condition.value,
         )
+        .sort((a, b) => b.lastModified! - a.lastModified!)
+        .map((config) => config.params)
     } else {
       contentPageList = this.parsedContentConfigList.map(
         (config) => config.config.params,
@@ -125,7 +127,10 @@ export class Reader extends Template {
 
     categories.forEach((category) => {
       const outputFilePath = path.join(this.outputCategoryPath!, category)
-      const list = this.getContentPageList({ key: 'category', value: category })
+      const list = this.getContentPageList({
+        key: 'category',
+        value: category,
+      })
       const url = this.getPageUrlByInputFilePath(
         path.join(this.rootPath, this.outputCategoryDir!, category),
       )
@@ -156,7 +161,6 @@ export class Reader extends Template {
   }
 
   private parseSearchPageConfig() {
-    if (!this.outputSearchPath) return
     this._parsedListPageConfigList.push({
       params: {
         ...this.siteParams,
@@ -164,7 +168,7 @@ export class Reader extends Template {
         list: this.getContentPageList(),
         type: 'search',
       },
-      outputFilePath: this.outputSearchPath,
+      outputFilePath: path.join(this.outputPath, 'search'),
     })
   }
 

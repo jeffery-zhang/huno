@@ -20,10 +20,14 @@
       type="image/x-icon"
     />
     <link href="{{baseUrl}}assets/css/index.css" rel="stylesheet" />
-    <script defer src="{{baseUrl}}assets/lib/alpinejs.anchor.min.js"></script>
     <script defer src="{{baseUrl}}assets/lib/alpinejs.min.js"></script>
   </head>
-  <body id="top" class="bg-base-300 text-base-content text-base min-h-full">
+  <body
+    id="top"
+    class="bg-base-300 text-base-content text-base min-h-full flex flex-col justify-between"
+    x-init="console.log('Alpinejs loaded')"
+  >
     {% include "basicLayout.html" %}
+    <script src="{{baseUrl}}assets/js/common.js"></script>
   </body>
 </html>

@@ -14,7 +14,6 @@ export interface CoreConfig {
   publicDir: string // 静态资源目录
   templateDir: string // 模板目录
   templateName: string // 模板名称
-  outputSearchDir?: string // 输出搜索页面的目录
   outputCategoryDir?: string // 输出主题页面的目录
   port: number // dev server 端口
   previewPort?: number // preview server 端口, 未定义时为 dev server 端口

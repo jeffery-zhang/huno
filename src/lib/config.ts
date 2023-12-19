@@ -12,7 +12,6 @@ const defaultCoreConfig = {
   templateDir: 'template',
   publicDir: 'public',
   templateName: 'default',
-  outputSearchDir: 'search',
   outputCategoryDir: 'category',
   port: 8080,
 }
@@ -59,9 +58,6 @@ export class Config {
   }
   get templateName(): string {
     return this._config.templateName
-  }
-  get outputSearchDir(): string | null {
-    return this._config.outputSearchDir || null
   }
   get outputCategoryDir(): string | null {
     return this._config.outputCategoryDir || null
