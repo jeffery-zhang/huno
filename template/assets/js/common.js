@@ -39,8 +39,8 @@ async function findSearchList() {
   const contents = xmlDoc.querySelectorAll('content')
   const filtered = Array.from(contents).filter(
     (doc) =>
-      doc.querySelector('title')?.includes(keywords) ||
-      doc.querySelector('description')?.includes(keywords),
+      doc.querySelector('title')?.textContent.includes(keywords) ||
+      doc.querySelector('description')?.textContent.includes(keywords),
   )
 }
 
