@@ -35,7 +35,7 @@ async function findSearchList() {
   const keywords = params.get('keywords')
   const xml = await (await fetch('/contentMap.xml')).text()
   const parser = new DOMParser()
-  const xmlDoc = parser.parseFromString(xml)
+  const xmlDoc = parser.parseFromString(xml, 'text/xml')
   const contents = xmlDoc.querySelectorAll('content')
   const filtered = Array.from(contents).filter(
     (doc) =>
