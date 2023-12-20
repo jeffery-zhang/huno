@@ -62,6 +62,23 @@ export class Renderer {
     }
   }
 
+  public renderCompiledArticleBeforeInsert(
+    config: PageConfig,
+    article: string,
+  ) {
+    try {
+      const renderedArticle = nunjucks.renderString(article, config.params)
+      return renderedArticle
+    } catch (error) {
+      console.error(
+        chalk.redBright(
+          `Render ${config.inputFilePath || ''} article error\n${error}`,
+        ),
+      )
+      return null
+    }
+  }
+
   public renderPageWithPageConfig(config: PageConfig): string | null {
     try {
       const html = nunjucks.render('index.html', config.params)

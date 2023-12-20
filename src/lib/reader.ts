@@ -165,7 +165,6 @@ export class Reader extends Template {
       params: {
         ...this.siteParams,
         url: '',
-        list: this.getContentPageList(),
         type: 'search',
       },
       outputFilePath: path.join(this.outputPath, 'search'),

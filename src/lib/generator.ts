@@ -115,13 +115,14 @@ export class Generator {
     const builder = new xml2js.Builder()
 
     const xmlData = builder.buildObject({
-      contentMap: { content: configs },
+      contentMap: { content: configs.map((config) => config.params) },
     })
 
     const result = await this.generateSinglePage(
       this._path.outputPath,
       xmlData,
       'contentMap.xml',
+      
     )
 
     return result

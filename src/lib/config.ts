@@ -68,7 +68,7 @@ export class Config {
   get previewPort(): number {
     return this._config.previewPort ?? this._config.port
   }
-  get coreConfig() {
+  get coreConfig(): CoreConfig {
     return this._config
   }
   get siteParams(): SiteParams {

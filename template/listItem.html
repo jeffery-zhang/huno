@@ -1,0 +1,23 @@
+<li class="relative card w-full bg-base-100 shadow-xl mb-10">
+  <div class="card-body">
+    <div class="stat">
+      <div class="stat-title">{{item.author}}</div>
+      <h2
+        class="stat-value cursor-pointer hover:text-primary transition-colors my-2 flex items-center gap-2"
+      >
+        <a href="{{baseUrl}}{{item.url}}">{{item.title}}</a>
+        {% if loop.index0 < 3 %}
+        <span class="badge badge-lg badge-primary">NEW</span>
+        {% endif %}
+      </h2>
+      <span class="stat-desc">Updated at {{item.updateTime}}</span>
+    </div>
+    <p>{{item.description}}</p>
+    <div>
+      <span class="badge badge-lg badge-neutral">{{item.category}}</span>
+    </div>
+    <div class="card-actions justify-end">
+      <a href="{{baseUrl}}{{item.url}}" class="btn btn-sm btn-primary"> >>> </a>
+    </div>
+  </div>
+</li>

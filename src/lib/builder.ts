@@ -35,6 +35,9 @@ export class Builder {
     const promises: Promise<any>[] = [
       await generator.copyAssets(),
       await generator.copyPublic(),
+      await generator.generateContentMapXml(
+        this._reader.parsedContentConfigList.map((config) => config.config),
+      ),
     ]
 
     this._reader.parsedContentConfigList.forEach(({ config, content }) => {
@@ -60,9 +63,24 @@ export class Builder {
             content,
             config.inputFilePath,
           )
+          if (!article) {
+            resolve(
+              chalk.redBright(
+                `Generate page ${config.outputFilePath} failed...`,
+              ),
+            )
+            return
+          }
+          const renderedArticle = renderer.renderCompiledArticleBeforeInsert(
+            config,
+            article,
+          )
           const contentPageConfig = {
             ...config,
-            article,
+            params: {
+              ...config.params,
+              article: renderedArticle,
+            },
           }
           const html =
             renderer.renderPageWithPageConfig(contentPageConfig) ?? ''

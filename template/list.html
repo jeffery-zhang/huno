@@ -1,20 +1,18 @@
 <div>
+  <!-- prettier-ignore -->
   {% if category %}
-  <div class="divider divider-primary">{{category}}</div>
-  {% endif %} {% if list|length > 0 %}
-  <ul>
+  <h3 class="divider divider-start divider-primary text-2xl text-neutral mb-10 mx-4">{{category}}</div>
+  {% endif %}
+  {% if list|length > 0 %}
+  <ul id="articleList">
     {% for item in list %}
-    {% if type === 'index' %}
-    {% if loop.index0 < 10 %}
-    <li>
-      <a href="{{item.url}}">{{item.title}}</a>
-    </li>
-    {% endif %}
-    {% else %}
-    <li>
-      <a href="{{item.url}}">{{item.title}}</a>
-    </li>
-    {% endif %}
+      {% if type === 'index' %}
+        {% if loop.index0 < 10 %}
+          {% include 'listItem.html' %}
+        {% endif %}
+      {% else %}
+        {% include 'listItem.html' %}
+      {% endif %}
     {% endfor %}
   </ul>
   {% endif %}
