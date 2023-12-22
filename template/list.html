@@ -3,7 +3,6 @@
   {% if category %}
   <h3 class="divider divider-start divider-primary text-2xl text-neutral mb-10 mx-4">{{category}}</div>
   {% endif %}
-  {% if list|length > 0 %}
   <ul id="articleList">
     {% for item in list %}
       {% if type === 'index' %}
@@ -15,5 +14,4 @@
       {% endif %}
     {% endfor %}
   </ul>
-  {% endif %}
 </div>

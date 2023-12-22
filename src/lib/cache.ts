@@ -45,7 +45,7 @@ export class Cache {
   }
 
   public checkOutputExists(outputFilePath: string) {
-    return fs.existsSync(outputFilePath)
+    return fs.existsSync(path.join(outputFilePath, 'index.html'))
   }
 
   public updateCache(key: string, cachedData: any) {
