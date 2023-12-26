@@ -33,7 +33,7 @@ export class Reader extends Template {
       const lines = match[1].trim().split('\n')
       lines.forEach((line) => {
         const [key, value]: string[] = line.split('=')
-        contentConfig[key.trim()] = value?.trim() ?? ''
+        contentConfig[key.trim()] = value ? JSON.parse(value.trim()) : ''
       })
       if (!contentConfig.title) return null
       return contentConfig as ExtractedContentParams
@@ -183,6 +183,7 @@ export class Reader extends Template {
   private parseCategoryConfigList() {
     if (this._categories.length === 0 || !this.outputCategoryPath) return
 
+    this.categories = this._categories
     this._categories.forEach((category) => {
       const outputFilePath = path.join(this.outputCategoryPath!, category.name)
       const list = this.getContentPageList({
@@ -202,13 +203,12 @@ export class Reader extends Template {
         outputFilePath,
       })
     })
-
-    this.categories = this._categories
   }
 
   private parseSeriesConfigList() {
     if (this._series.length === 0 || !this.outputSeriesPath) return
 
+    this.seriesList = this._series
     this._series.forEach((series) => {
       const outputFilePath = path.join(this.outputSeriesPath!, series.name)
       const list = this.getContentPageList({
@@ -228,13 +228,12 @@ export class Reader extends Template {
         outputFilePath,
       })
     })
-
-    this.seriesList = this._series
   }
 
   private parseTagConfigList() {
     if (this._tags.length === 0 || !this.outputTagPath) return
 
+    this.tags = this._tags
     this._tags.forEach((tag) => {
       const outputFilePath = path.join(this.outputTagPath!, tag.name)
       const list = this.getContentPageList({
@@ -254,8 +253,6 @@ export class Reader extends Template {
         outputFilePath,
       })
     })
-
-    this.tags = this._tags
   }
 
   private parseIndexPageConfig() {
@@ -319,5 +316,6 @@ export class Reader extends Template {
     this.parseTagConfigList()
     this.parseIndexPageConfig()
     this.parseSearchPageConfig()
+    console.log('site params: ', this.siteParams)
   }
 }

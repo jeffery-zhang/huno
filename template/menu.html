@@ -11,7 +11,6 @@
         <div tabindex="0" role="button" class="btn btn-ghost rounded-btn">
           Category
         </div>
-        {% if categories.length %}
         <ul
           tabindex="0"
           class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
@@ -28,9 +27,7 @@
               {% endif %}
             </a>
           </li>
-          {% endfor %}
         </ul>
-        {% endif %}
       </div>
     </li>
     {#
@@ -43,7 +40,6 @@
         <div tabindex="0" role="button" class="btn btn-ghost rounded-btn">
           Series
         </div>
-        {% if series.length %}
         <ul
           tabindex="0"
           class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
@@ -62,7 +58,6 @@
           </li>
           {% endfor %}
         </ul>
-        {% endif %}
       </div>
     </li>
     {#
@@ -75,7 +70,6 @@
         <div tabindex="0" role="button" class="btn btn-ghost rounded-btn">
           Tag
         </div>
-        {% if series.length %}
         <ul
           tabindex="0"
           class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
@@ -94,7 +88,6 @@
           </li>
           {% endfor %}
         </ul>
-        {% endif %}
       </div>
     </li>
     {% endif %}

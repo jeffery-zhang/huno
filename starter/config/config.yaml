@@ -1,0 +1,7 @@
+contentDir: 'content'
+outputDir: 'dist'
+publicDir: 'public'
+port: 8080
+category: 'category'
+series: 'series'
+tag: 'tag'

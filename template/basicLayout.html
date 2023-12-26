@@ -54,25 +54,6 @@
         />
       </svg>
     </label>
-    <div
-      class="inline-block lg:hidden dropdown dropdown-hover dropdown-bottom dropdown-end"
-    >
-      <div tabindex="0" role="button" class="btn btn-sm m-1">...</div>
-      <ul
-        tabindex="0"
-        class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
-      >
-        {% for category in categories %}
-        <li>
-          <a
-            href="{{baseUrl}}{{_coreConfig.category}}/{{category}}"
-            title="{{category}}"
-            >{{category}}</a
-          >
-        </li>
-        {% endfor %}
-      </ul>
-    </div>
   </nav>
 </header>
 <main class="flex-1 flex container mx-auto p-10">

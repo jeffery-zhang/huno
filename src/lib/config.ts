@@ -18,7 +18,6 @@ const defaultCoreConfig: CoreConfig = {
   tag: 'tag',
 }
 const defaultSiteParams: SiteParams = {
-  _coreConfig: defaultCoreConfig,
   baseUrl: '/',
   defaultLang: 'en',
   siteTitle: 'Awesome Title',
@@ -61,11 +60,11 @@ export class Config {
   get templateName(): string {
     return this._config.templateName
   }
-  get series(): string | null {
-    return this._config.series || null
-  }
   get category(): string | null {
     return this._config.category || null
+  }
+  get series(): string | null {
+    return this._config.series || null
   }
   get tag(): string | null {
     return this._config.tag || null
@@ -114,7 +113,6 @@ export class Config {
     if (configFileExists) {
       const config = yaml.parse(fs.readFileSync(configFilePath, 'utf-8')) ?? {}
       this._config = lodash.merge(this._config, config)
-      this._siteParams._coreConfig = this._config
     } else {
       console.log(
         chalk.yellowBright('No exist config file, use default config'),

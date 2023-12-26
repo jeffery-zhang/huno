@@ -28,7 +28,6 @@ export interface SiteParams {
   description?: string
   author?: string
   keywords?: string
-  _coreConfig?: CoreConfig // 核心配置
   [key: string]: any
 }
 
