@@ -1,9 +1,0 @@
-contentDir: 'content'
-outputDir: 'dist'
-siteParams:
-  {
-    baseUrl: '/',
-    title: 'Hello Huno',
-    description: 'Welcome to Huno',
-    author: 'Huno',
-  }

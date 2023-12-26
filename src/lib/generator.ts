@@ -83,7 +83,7 @@ export class Generator {
     if (!fs.existsSync(inputPath)) {
       return
     }
-    const targetPath = path.join(this._path.outputPath, 'public')
+    const targetPath = this._path.outputPath
     const targetExists = fs.existsSync(targetPath)
     if (!targetExists) {
       fs.mkdirSync(targetPath, { recursive: true })
@@ -122,7 +122,6 @@ export class Generator {
       this._path.outputPath,
       xmlData,
       'contentMap.xml',
-      
     )
 
     return result

@@ -568,73 +568,7 @@ html {
   --tab-radius: 0.2rem;
 }
 
-:root:has(input.theme-controller[value=nord]:checked) {
-  color-scheme: light;
-  --pc: 0.118872 0.015449 254.027774;
-  --sc: 0.139303 0.011822 248.687186;
-  --ac: 0.154929 0.01245 217.469017;
-  --inc: 0.138414 0.012499 332.664922;
-  --suc: 0.153654 0.01498 131.063061;
-  --wac: 0.170972 0.017847 84.093335;
-  --erc: 0.12122 0.024119 15.341883;
-  --animation-btn: 0.25s;
-  --animation-input: .2s;
-  --btn-focus-scale: 0.95;
-  --border-btn: 1px;
-  --tab-border: 1px;
-  --p: 0.594359 0.077246 254.027774;
-  --s: 0.696516 0.059108 248.687186;
-  --a: 0.774643 0.062249 217.469017;
-  --n: 0.45229 0.035214 264.1312;
-  --nc: 0.899258 0.016374 262.749256;
-  --b1: 0.951276 0.007445 260.731539;
-  --b2: 0.932996 0.010389 261.788485;
-  --b3: 0.899258 0.016374 262.749256;
-  --bc: 0.324374 0.022945 264.182036;
-  --in: 0.692072 0.062496 332.664922;
-  --su: 0.76827 0.074899 131.063061;
-  --wa: 0.854862 0.089234 84.093335;
-  --er: 0.6061 0.120594 15.341883;
-  --rounded-box: 0.4rem;
-  --rounded-btn: 0.2rem;
-  --rounded-badge: 0.4rem;
-  --tab-radius: 0.2rem;
-}
-
 [data-theme=forest] {
-  color-scheme: dark;
-  --b2: 0.17522 0.007709 17.911578;
-  --b3: 0.162032 0.007129 17.911578;
-  --in: 0.7206 0.191 231.6;
-  --su: 64.8% 0.150 160;
-  --wa: 0.8471 0.199 83.87;
-  --er: 0.7176 0.221 22.18;
-  --bc: 0.837682 0.001658 17.911578;
-  --sc: 0.139553 0.027077 168.327128;
-  --ac: 0.141257 0.02389 185.713193;
-  --nc: 0.861397 0.007806 171.364646;
-  --inc: 0 0 0;
-  --suc: 0 0 0;
-  --wac: 0 0 0;
-  --erc: 0 0 0;
-  --rounded-box: 1rem;
-  --rounded-badge: 1.9rem;
-  --animation-btn: 0.25s;
-  --animation-input: .2s;
-  --btn-focus-scale: 0.95;
-  --border-btn: 1px;
-  --tab-border: 1px;
-  --tab-radius: 0.5rem;
-  --p: 0.686283 0.185567 148.958922;
-  --pc: 0 0 0;
-  --s: 0.697764 0.135385 168.327128;
-  --a: 0.706285 0.119451 185.713193;
-  --n: 0.306985 0.039032 171.364646;
-  --b1: 0.188409 0.00829 17.911578;
-  --rounded-btn: 1.9rem;
-}
-
-:root:has(input.theme-controller[value=forest]:checked) {
   color-scheme: dark;
   --b2: 0.17522 0.007709 17.911578;
   --b3: 0.162032 0.007129 17.911578;
@@ -1342,6 +1276,20 @@ html {
 :where(.navbar > *) {
   display: inline-flex;
   align-items: center;
+}
+
+.navbar-start {
+  width: 50%;
+  justify-content: flex-start;
+}
+
+.navbar-center {
+  flex-shrink: 0;
+}
+
+.navbar-end {
+  width: 50%;
+  justify-content: flex-end;
 }
 
 .stat {
@@ -2062,6 +2010,15 @@ html {
   line-height: 2rem;
 }
 
+.menu-horizontal {
+  display: inline-flex;
+  flex-direction: row;
+}
+
+.menu-horizontal > li:not(.menu-title) > details > ul {
+  position: absolute;
+}
+
 .card-compact .card-body {
   padding: 1rem;
   font-size: 0.875rem;
@@ -2072,6 +2029,27 @@ html {
   padding: var(--padding-card, 2rem);
   font-size: 1rem;
   line-height: 1.5rem;
+}
+
+.menu-horizontal > li:not(.menu-title) > details > ul {
+  margin-inline-start: 0px;
+  margin-top: 1rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  padding-inline-end: 0.5rem;
+}
+
+.menu-horizontal > li > details > ul:before {
+  content: none;
+}
+
+:where(.menu-horizontal > li:not(.menu-title) > details > ul) {
+  border-radius: var(--rounded-box, 1rem);
+  --tw-bg-opacity: 1;
+  background-color: var(--fallback-b1,oklch(var(--b1)/var(--tw-bg-opacity)));
+  --tw-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --tw-shadow-colored: 0 20px 25px -5px var(--tw-shadow-color), 0 8px 10px -6px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
 .prose {
@@ -2608,29 +2586,24 @@ html {
   margin-bottom: 1rem;
 }
 
-.my-6 {
-  margin-top: 1.5rem;
-  margin-bottom: 1.5rem;
-}
-
 .mb-10 {
   margin-bottom: 2.5rem;
-}
-
-.mb-4 {
-  margin-bottom: 1rem;
 }
 
 .mb-2 {
   margin-bottom: 0.5rem;
 }
 
-.mb-6 {
-  margin-bottom: 1.5rem;
-}
-
 .mb-8 {
   margin-bottom: 2rem;
+}
+
+.mt-4 {
+  margin-top: 1rem;
+}
+
+.inline-block {
+  display: inline-block;
 }
 
 .flex {
@@ -2649,8 +2622,20 @@ html {
   height: 100%;
 }
 
+.h-12 {
+  height: 3rem;
+}
+
+.h-auto {
+  height: auto;
+}
+
 .min-h-full {
   min-height: 100%;
+}
+
+.min-h-0 {
+  min-height: 0px;
 }
 
 .w-52 {
@@ -2693,8 +2678,16 @@ html {
   align-items: center;
 }
 
+.items-stretch {
+  align-items: stretch;
+}
+
 .justify-end {
   justify-content: flex-end;
+}
+
+.justify-center {
+  justify-content: center;
 }
 
 .justify-between {
@@ -2711,6 +2704,10 @@ html {
 
 .rounded-box {
   border-radius: var(--rounded-box, 1rem);
+}
+
+.rounded-btn {
+  border-radius: var(--rounded-btn, 0.5rem);
 }
 
 .bg-base-100 {
@@ -2742,6 +2739,20 @@ html {
 
 .p-6 {
   padding: 1.5rem;
+}
+
+.p-0 {
+  padding: 0px;
+}
+
+.px-1 {
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
+}
+
+.px-2 {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
 }
 
 .text-2xl {
@@ -2800,6 +2811,14 @@ html {
 @media (min-width: 1024px) {
   .lg\:block {
     display: block;
+  }
+
+  .lg\:flex {
+    display: flex;
+  }
+
+  .lg\:hidden {
+    display: none;
   }
 
   .lg\:w-1\/3 {

@@ -25,10 +25,22 @@ export class Path extends Config {
     return path.join(this.outputPath, this.contentDir)
   }
   get outputCategoryPath() {
-    if (!this.outputCategoryDir) {
+    if (!this.category) {
       return null
     }
-    return path.join(this.outputPath, this.outputCategoryDir)
+    return path.join(this.outputPath, this.category)
+  }
+  get outputSeriesPath() {
+    if (!this.series) {
+      return null
+    }
+    return path.join(this.outputPath, this.series)
+  }
+  get outputTagPath() {
+    if (!this.tag) {
+      return null
+    }
+    return path.join(this.outputPath, this.tag)
   }
   get customTemplatePath(): string {
     return path.join(this.rootPath, this.templateDir)
@@ -48,5 +60,29 @@ export class Path extends Config {
   }
   get publicPath(): string {
     return path.join(this.rootPath, this.publicDir)
+  }
+
+  public getEncodedUrl(url: string) {
+    return url
+      .split('/')
+      .map((u) => encodeURI(u))
+      .join('/')
+  }
+
+  public getPageUrlByInputFilePath(inputFilePath: string): string {
+    return inputFilePath
+      .replace(this.rootPath, '')
+      .replace(/\\/g, '/')
+      .slice(1)
+      .replace('.md', '')
+      .split('/')
+      .map((url) => encodeURI(url))
+      .join('/')
+  }
+
+  public getOutputFilePathByInputFilePath(inputFilePath: string) {
+    return inputFilePath
+      .replace(this.rootPath, this.outputPath)
+      .replace('.md', '')
   }
 }

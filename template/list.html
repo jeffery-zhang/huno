@@ -1,7 +1,28 @@
 <div>
-  <!-- prettier-ignore -->
+  {# <!-- prettier-ignore --> #}
   {% if category %}
-  <h3 class="divider divider-start divider-primary text-2xl text-neutral mb-10 mx-4">{{category}}</div>
+  <h3 class="divider divider-start divider-primary text-2xl text-neutral mb-10 mx-4">
+    {{category.name}}
+    {% if category.count > 0 %}
+      ({{category.count}})
+    {% endif %}
+  </div>
+  {% endif %}
+  {% if series %}
+  <h3 class="divider divider-start divider-primary text-2xl text-neutral mb-10 mx-4">
+    {{series.name}}
+    {% if series.count > 0 %}
+      ({{series.count}})
+    {% endif %}
+  </div>
+  {% endif %}
+  {% if tag %}
+  <h3 class="divider divider-start divider-primary text-2xl text-neutral mb-10 mx-4">
+    {{tag.name}}
+    {% if tag.count > 0 %}
+      ({{tag.count}})
+    {% endif %}
+  </div>
   {% endif %}
   <ul id="articleList">
     {% for item in list %}

@@ -4,16 +4,18 @@ import yaml from 'yaml'
 import lodash from 'lodash'
 import chalk from 'chalk'
 
-import { CoreConfig, SiteParams } from '../types'
+import { CoreConfig, SiteParams, TaxonomyTypeListItem } from '../types'
 
-const defaultCoreConfig = {
+const defaultCoreConfig: CoreConfig = {
   contentDir: 'content',
   outputDir: 'dist',
   templateDir: 'template',
   publicDir: 'public',
   templateName: 'default',
-  outputCategoryDir: 'category',
   port: 8080,
+  category: 'category',
+  series: 'series',
+  tag: 'tag',
 }
 const defaultSiteParams: SiteParams = {
   _coreConfig: defaultCoreConfig,
@@ -59,8 +61,14 @@ export class Config {
   get templateName(): string {
     return this._config.templateName
   }
-  get outputCategoryDir(): string | null {
-    return this._config.outputCategoryDir || null
+  get series(): string | null {
+    return this._config.series || null
+  }
+  get category(): string | null {
+    return this._config.category || null
+  }
+  get tag(): string | null {
+    return this._config.tag || null
   }
   get port(): number {
     return this._config.port
@@ -78,8 +86,14 @@ export class Config {
       baseUrl,
     }
   }
-  set categories(categories: [string]) {
+  set categories(categories: TaxonomyTypeListItem[]) {
     this._siteParams.categories = categories
+  }
+  set seriesList(seriesList: TaxonomyTypeListItem[]) {
+    this._siteParams.seriesList = seriesList
+  }
+  set tags(tags: TaxonomyTypeListItem[]) {
+    this._siteParams.tags = tags
   }
 
   private parseBaseUrl(url: string) {

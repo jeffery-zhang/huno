@@ -1,12 +1,12 @@
 +++
-title=Huno web Generator
+title=Huno static web Generator
 description=This is an example page
 author=Huno
-category=Hello
+category=Huno
 +++
 
 # Hello Huno
 
-- Huno is an static website generator
+- Huno is a static website generator
 - Huno can compile and render markdowns to htmls
 - Try 'huno build' command to generate htmls

@@ -10,6 +10,7 @@ import {
   SinglePageParams,
   ExtractedContentParams,
   ParsedContentPageConfigWithContent,
+  TaxonomyTypeListItem,
 } from '../types'
 
 export class Reader extends Template {
@@ -20,23 +21,9 @@ export class Reader extends Template {
   private _contentConfigRegexp = /\+\+\+(.*?)\+\+\+/s
   private _parsedContentConfigList: ParsedContentPageConfigWithContent[] = []
   private _parsedListPageConfigList: PageConfig[] = []
-
-  private getPageUrlByInputFilePath(inputFilePath: string): string {
-    return inputFilePath
-      .replace(this.rootPath, '')
-      .replace(/\\/g, '/')
-      .slice(1)
-      .replace('.md', '')
-      .split('/')
-      .map((url) => encodeURI(url))
-      .join('/')
-  }
-
-  private getOutputFilePathByInputFilePath(inputFilePath: string) {
-    return inputFilePath
-      .replace(this.rootPath, this.outputPath)
-      .replace('.md', '')
-  }
+  private _categories: TaxonomyTypeListItem[] = []
+  private _series: TaxonomyTypeListItem[] = []
+  private _tags: TaxonomyTypeListItem[] = []
 
   private extractContentConfig(content: string): ExtractedContentParams | null {
     const contentConfig: { [key: string]: string } = {}
@@ -62,6 +49,58 @@ export class Reader extends Template {
     return globSync(`${this.contentPath}/**/*.md`)
   }
 
+  private parseCategory(contentConfig: ExtractedContentParams) {
+    if (!this.category) return
+    const { category } = contentConfig
+    if (category) {
+      if (typeof category === 'string') {
+        if (!this._categories.some((c) => c.name === category)) {
+          this._categories.push({
+            name: category,
+            url: this.getEncodedUrl(`${this.category}/${category}`),
+          })
+        }
+      } else if (Array.isArray(category)) {
+        category.forEach((c) => {
+          if (!this._categories.some((cat) => cat.name === c)) {
+            this._categories.push({
+              name: c,
+              url: this.getEncodedUrl(`${this.category}/${c}`),
+            })
+          }
+        })
+      }
+    }
+  }
+
+  private parseSeries(contentConfig: ExtractedContentParams) {
+    if (!this.series) return
+    const { series } = contentConfig
+    if (series && typeof series === 'string') {
+      if (!this._series.some((s) => s.name === series)) {
+        this._series.push({
+          name: series,
+          url: this.getEncodedUrl(`${this.series}/${series}`),
+        })
+      }
+    }
+  }
+
+  private parseTag(contentConfig: ExtractedContentParams) {
+    if (!this.tag) return
+    const { tag } = contentConfig
+    if (tag && Array.isArray(tag)) {
+      tag.forEach((t) => {
+        if (!this._tags.some((tag) => tag.name === t)) {
+          this._tags.push({
+            name: t,
+            url: this.getEncodedUrl(`${this.tag}/${t}`),
+          })
+        }
+      })
+    }
+  }
+
   private parseSingleContentPageConfigAndContent(inputFilePath: string) {
     try {
       const fileStats = fs.statSync(inputFilePath)
@@ -70,6 +109,9 @@ export class Reader extends Template {
       const text = fs.readFileSync(inputFilePath, 'utf-8')
       const contentConfig = this.extractContentConfig(text)
       if (!contentConfig) return
+      this.parseCategory(contentConfig)
+      this.parseSeries(contentConfig)
+      this.parseTag(contentConfig)
       const outputFilePath =
         this.getOutputFilePathByInputFilePath(inputFilePath)
       const url = this.getPageUrlByInputFilePath(inputFilePath)
@@ -106,38 +148,53 @@ export class Reader extends Template {
     if (condition && condition.key && condition.value) {
       contentPageList = this.parsedContentConfigList
         .map((config) => config.config)
-        .filter(
-          ({ params }) =>
-            params[condition.key as keyof SinglePageParams] === condition.value,
-        )
+        .filter(({ params }) => {
+          if (
+            condition.key === 'series' ||
+            (condition.key === 'category' &&
+              typeof params[condition.key] === 'string')
+          ) {
+            return (
+              params[condition.key as keyof SinglePageParams] ===
+              condition.value
+            )
+          }
+          if (
+            condition.key === 'tag' ||
+            (condition.key === 'category' &&
+              Array.isArray(params[condition.key]))
+          ) {
+            return params[condition.key].includes(condition.value)
+          }
+          return false
+        })
         .sort((a, b) => b.lastModified! - a.lastModified!)
         .map((config) => config.params)
     } else {
-      contentPageList = this.parsedContentConfigList.map(
-        (config) => config.config.params,
-      )
+      contentPageList = this.parsedContentConfigList
+        .map((config) => config.config)
+        .sort((a, b) => b.lastModified! - a.lastModified!)
+        .map((config) => config.params)
     }
 
     return contentPageList
   }
 
   private parseCategoryConfigList() {
-    const categories = this.siteParams.categories ?? []
-    if (categories.length === 0 || !this.outputCategoryPath) return
+    if (this._categories.length === 0 || !this.outputCategoryPath) return
 
-    categories.forEach((category) => {
-      const outputFilePath = path.join(this.outputCategoryPath!, category)
+    this._categories.forEach((category) => {
+      const outputFilePath = path.join(this.outputCategoryPath!, category.name)
       const list = this.getContentPageList({
         key: 'category',
-        value: category,
+        value: category.name,
       })
-      const url = this.getPageUrlByInputFilePath(
-        path.join(this.rootPath, this.outputCategoryDir!, category),
-      )
+      const count = list.length
+      category.count = count
       this._parsedListPageConfigList.push({
         params: {
           ...this.siteParams,
-          url,
+          url: category.url,
           category,
           list,
           type: 'list',
@@ -145,6 +202,60 @@ export class Reader extends Template {
         outputFilePath,
       })
     })
+
+    this.categories = this._categories
+  }
+
+  private parseSeriesConfigList() {
+    if (this._series.length === 0 || !this.outputSeriesPath) return
+
+    this._series.forEach((series) => {
+      const outputFilePath = path.join(this.outputSeriesPath!, series.name)
+      const list = this.getContentPageList({
+        key: 'series',
+        value: series.name,
+      })
+      const count = list.length
+      series.count = count
+      this._parsedListPageConfigList.push({
+        params: {
+          ...this.siteParams,
+          url: series.url,
+          series,
+          list,
+          type: 'list',
+        },
+        outputFilePath,
+      })
+    })
+
+    this.seriesList = this._series
+  }
+
+  private parseTagConfigList() {
+    if (this._tags.length === 0 || !this.outputTagPath) return
+
+    this._tags.forEach((tag) => {
+      const outputFilePath = path.join(this.outputTagPath!, tag.name)
+      const list = this.getContentPageList({
+        key: 'tag',
+        value: tag.name,
+      })
+      const count = list.length
+      tag.count = count
+      this._parsedListPageConfigList.push({
+        params: {
+          ...this.siteParams,
+          url: tag.url,
+          tag,
+          list,
+          type: 'list',
+        },
+        outputFilePath,
+      })
+    })
+
+    this.tags = this._tags
   }
 
   private parseIndexPageConfig() {
@@ -164,7 +275,7 @@ export class Reader extends Template {
     this._parsedListPageConfigList.push({
       params: {
         ...this.siteParams,
-        url: '',
+        url: 'search',
         type: 'search',
       },
       outputFilePath: path.join(this.outputPath, 'search'),
@@ -204,6 +315,8 @@ export class Reader extends Template {
   public async readFiles() {
     await this.parseAllContentPage()
     this.parseCategoryConfigList()
+    this.parseSeriesConfigList()
+    this.parseTagConfigList()
     this.parseIndexPageConfig()
     this.parseSearchPageConfig()
   }

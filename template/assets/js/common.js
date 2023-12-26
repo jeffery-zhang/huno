@@ -1,5 +1,3 @@
-window.Alpine?.start()
-
 function search(e) {
   const keywords = e.target.value
   if (!keywords) return

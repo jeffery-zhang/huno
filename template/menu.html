@@ -1,0 +1,102 @@
+<div class="hidden lg:flex">
+  <ul class="flex flex-1 justify-center">
+    <li>
+      <a class="btn btn-ghost rounded-btn" href="/"
+        >{{home | default('Home')}}</a
+      >
+    </li>
+    {% if categories.length %}
+    <li>
+      <div class="dropdown dropdown-hover dropdown-bottom dropdown-end">
+        <div tabindex="0" role="button" class="btn btn-ghost rounded-btn">
+          Category
+        </div>
+        {% if categories.length %}
+        <ul
+          tabindex="0"
+          class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
+        >
+          {% for category in categories %}
+          <li>
+            <a href="{{baseUrl}}{{category.url}}" title="{{category.name}}">
+              {#
+              <!-- prettier-ignore -->
+              #}
+              {{category.name}}
+              {% if category.count > 0 %}
+                ({{category.count}})
+              {% endif %}
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </div>
+    </li>
+    {#
+    <!-- prettier-ignore -->
+    #}
+    {% endif %}
+    {% if seriesList.length %}
+    <li>
+      <div class="dropdown dropdown-hover dropdown-bottom dropdown-end p-0">
+        <div tabindex="0" role="button" class="btn btn-ghost rounded-btn">
+          Series
+        </div>
+        {% if series.length %}
+        <ul
+          tabindex="0"
+          class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
+        >
+          {% for series in seriesList %}
+          <li>
+            <a href="{{baseUrl}}{{series.url}}" title="{{series.name}}">
+              {#
+              <!-- prettier-ignore -->
+              #}
+              {{series.name}}
+              {% if series.count > 0 %}
+                ({{series.count}})
+              {% endif %}
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </div>
+    </li>
+    {#
+    <!-- prettier-ignore -->
+    #}
+    {% endif %}
+    {% if tags.length %}
+    <li>
+      <div class="dropdown dropdown-hover dropdown-bottom dropdown-end p-0">
+        <div tabindex="0" role="button" class="btn btn-ghost rounded-btn">
+          Tag
+        </div>
+        {% if series.length %}
+        <ul
+          tabindex="0"
+          class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
+        >
+          {% for tag in tags %}
+          <li>
+            <a href="{{baseUrl}}{{tag.url}}" title="{{tag.name}}">
+              {#
+              <!-- prettier-ignore -->
+              #}
+              {{tag.name}}
+              {% if tag.count > 0 %}
+                ({{tag.count}})
+              {% endif %}
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </div>
+    </li>
+    {% endif %}
+  </ul>
+</div>
