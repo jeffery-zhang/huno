@@ -3,8 +3,10 @@ import path from 'path'
 import { globSync } from 'glob'
 import chalk from 'chalk'
 import dayjs from 'dayjs'
+import lodash from 'lodash'
 
 import { Template } from './template'
+import { validJsonString, parseStringToJsonString } from '../utils'
 import {
   PageConfig,
   SinglePageParams,
@@ -33,7 +35,11 @@ export class Reader extends Template {
       const lines = match[1].trim().split('\n')
       lines.forEach((line) => {
         const [key, value]: string[] = line.split('=')
-        contentConfig[key.trim()] = value ? JSON.parse(value.trim()) : ''
+        if (!value) return
+        const validValue = validJsonString(value.trim())
+          ? value.trim()
+          : parseStringToJsonString(value.trim())
+        contentConfig[key.trim()] = validValue
       })
       if (!contentConfig.title) return null
       return contentConfig as ExtractedContentParams
@@ -298,6 +304,9 @@ export class Reader extends Template {
     })
 
     await Promise.all(promises)
+    this._parsedContentConfigList.forEach((item) => {
+      item.config.params = lodash.merge(item.config.params, this.siteParams)
+    })
     console.log(chalk.greenBright('Parsing content files completed!'))
   }
 
