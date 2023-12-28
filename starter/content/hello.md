@@ -1,9 +1,9 @@
 +++
-title="Huno static web Generator"
-description="This is an example page"
-author="Huno"
-category="Huno"
-series="Huno Series"
+title=Huno static web Generator
+description=This is an example page
+author=Huno
+category=Huno
+series=Huno Series
 tag=["huno", "starter"]
 +++
 

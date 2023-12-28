@@ -211,7 +211,6 @@ export class Reader extends Template {
   private parseSeriesConfigList() {
     if (this._series.length === 0 || !this.outputSeriesPath) return
 
-    this.seriesList = this._series
     this._series.forEach((series) => {
       const outputFilePath = path.join(this.outputSeriesPath!, series.name)
       const list = this.getContentPageList({
@@ -236,7 +235,6 @@ export class Reader extends Template {
   private parseTagConfigList() {
     if (this._tags.length === 0 || !this.outputTagPath) return
 
-    this.tags = this._tags
     this._tags.forEach((tag) => {
       const outputFilePath = path.join(this.outputTagPath!, tag.name)
       const list = this.getContentPageList({
@@ -301,7 +299,10 @@ export class Reader extends Template {
     })
 
     await Promise.all(promises)
+
     this.categories = this._categories
+    this.seriesList = this._series
+    this.tags = this._tags
     this._parsedContentConfigList.forEach((item, index, arr) => {
       arr[index].config.params = lodash.merge(
         item.config.params,
