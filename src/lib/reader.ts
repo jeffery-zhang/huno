@@ -304,10 +304,9 @@ export class Reader extends Template {
     this.seriesList = this._series
     this.tags = this._tags
     this._parsedContentConfigList.forEach((item, index, arr) => {
-      arr[index].config.params = lodash.merge(
-        item.config.params,
-        this.siteParams,
-      )
+      arr[index].config.params['categories'] = this._categories
+      arr[index].config.params['seriesList'] = this._series
+      arr[index].config.params['tags'] = this._tags
     })
     console.log(chalk.greenBright('Parsing content files completed!'))
   }
