@@ -7,6 +7,9 @@ export function validJsonString(string: string) {
   }
 }
 
-export function parseStringToJsonString(string: string) {
-  return '"' + string + '"'
+export function parseStringToJson(val: string) {
+  if (!validJsonString(val)) return val
+  else if (val.startsWith('{') || val.startsWith('[')) {
+    return JSON.parse(val)
+  }
 }

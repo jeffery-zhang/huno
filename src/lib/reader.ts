@@ -6,7 +6,7 @@ import dayjs from 'dayjs'
 import lodash from 'lodash'
 
 import { Template } from './template'
-import { validJsonString, parseStringToJsonString } from '../utils'
+import { validJsonString, parseStringToJson } from '../utils'
 import {
   PageConfig,
   SinglePageParams,
@@ -36,10 +36,8 @@ export class Reader extends Template {
       lines.forEach((line) => {
         const [key, value]: string[] = line.split('=')
         if (!value) return
-        const validValue = validJsonString(value.trim())
-          ? value.trim()
-          : parseStringToJsonString(value.trim())
-        contentConfig[key.trim()] = validValue
+        const parsedValue = parseStringToJson(value.trim())
+        contentConfig[key.trim()] = parsedValue
       })
       if (!contentConfig.title) return null
       return contentConfig as ExtractedContentParams
@@ -189,7 +187,6 @@ export class Reader extends Template {
   private parseCategoryConfigList() {
     if (this._categories.length === 0 || !this.outputCategoryPath) return
 
-    this.categories = this._categories
     this._categories.forEach((category) => {
       const outputFilePath = path.join(this.outputCategoryPath!, category.name)
       const list = this.getContentPageList({
@@ -304,8 +301,12 @@ export class Reader extends Template {
     })
 
     await Promise.all(promises)
-    this._parsedContentConfigList.forEach((item) => {
-      item.config.params = lodash.merge(item.config.params, this.siteParams)
+    this.categories = this._categories
+    this._parsedContentConfigList.forEach((item, index, arr) => {
+      arr[index].config.params = lodash.merge(
+        item.config.params,
+        this.siteParams,
+      )
     })
     console.log(chalk.greenBright('Parsing content files completed!'))
   }
@@ -325,6 +326,5 @@ export class Reader extends Template {
     this.parseTagConfigList()
     this.parseIndexPageConfig()
     this.parseSearchPageConfig()
-    console.log('site params: ', this.siteParams)
   }
 }

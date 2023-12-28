@@ -24,12 +24,13 @@
               {#
               <!-- prettier-ignore -->
               #}
-              {{category.name}}
-              {% if category.count > 0 %}
-                ({{category.count}})
-              {% endif %}
+                {{category.name}}
+                {% if category.count > 0 %}
+                  ({{category.count}})
+                {% endif %}
             </a>
           </li>
+          {% endfor %}
         </ul>
       </div>
     </li>
