@@ -12,7 +12,7 @@
     <li>
       <div class="dropdown dropdown-hover dropdown-bottom dropdown-end">
         <div tabindex="0" role="button" class="btn btn-ghost rounded-btn">
-          Category
+          {{_coreConfig.category | default('Category')}}
         </div>
         <ul
           tabindex="0"
@@ -42,7 +42,7 @@
     <li>
       <div class="dropdown dropdown-hover dropdown-bottom dropdown-end p-0">
         <div tabindex="0" role="button" class="btn btn-ghost rounded-btn">
-          Series
+          {{_coreConfig.series | default('Series')}}
         </div>
         <ul
           tabindex="0"
@@ -72,7 +72,7 @@
     <li>
       <div class="dropdown dropdown-hover dropdown-bottom dropdown-end p-0">
         <div tabindex="0" role="button" class="btn btn-ghost rounded-btn">
-          Tag
+          {{_coreConfig.tag | default('Tag')}}
         </div>
         <ul
           tabindex="0"

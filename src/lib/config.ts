@@ -13,9 +13,9 @@ const defaultCoreConfig: CoreConfig = {
   publicDir: 'public',
   templateName: 'default',
   port: 8080,
-  category: 'category',
-  series: 'series',
-  tag: 'tag',
+  category: 'Category',
+  series: 'Series',
+  tag: 'Tag',
 }
 const defaultSiteParams: SiteParams = {
   baseUrl: '/',
