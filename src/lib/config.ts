@@ -113,6 +113,7 @@ export class Config {
     if (configFileExists) {
       const config = yaml.parse(fs.readFileSync(configFilePath, 'utf-8')) ?? {}
       this._config = lodash.merge(this._config, config)
+      this._siteParams._coreConfig = this._config
     } else {
       console.log(
         chalk.yellowBright('No exist config file, use default config'),

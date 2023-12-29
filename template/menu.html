@@ -8,7 +8,7 @@
     {#
     <!-- prettier-ignore -->
     #}
-    {% if categories.length %}
+    {% if _coreConfig.category and categories.length %}
     <li>
       <div class="dropdown dropdown-hover dropdown-bottom dropdown-end">
         <div tabindex="0" role="button" class="btn btn-ghost rounded-btn">
@@ -38,7 +38,7 @@
     <!-- prettier-ignore -->
     #}
     {% endif %}
-    {% if seriesList.length %}
+    {% if _coreConfig.series and seriesList.length %}
     <li>
       <div class="dropdown dropdown-hover dropdown-bottom dropdown-end p-0">
         <div tabindex="0" role="button" class="btn btn-ghost rounded-btn">
@@ -68,7 +68,7 @@
     <!-- prettier-ignore -->
     #}
     {% endif %}
-    {% if tags.length %}
+    {% if _coreConfig.tag and tags.length %}
     <li>
       <div class="dropdown dropdown-hover dropdown-bottom dropdown-end p-0">
         <div tabindex="0" role="button" class="btn btn-ghost rounded-btn">
