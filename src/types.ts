@@ -7,27 +7,10 @@ export interface SingleCommand {
   arguments?: string[][] // 命令参数
 }
 
-// huno应用的核心配置项
-export interface CoreConfig {
-  contentDir: string // 文章存放的目录
-  outputDir: string // 输出目录
-  publicDir: string // 静态资源目录
-  templateDir: string // 模板目录
-  templateName: string // 模板名称
-  port: number // dev server 端口
-  category?: string // 分类
-  series?: string // 系列
-  tag?: string // 标签
-  previewPort?: number // preview server 端口, 未定义时为 dev server 端口
-}
-
 // 页面基本参数
-export interface SiteParams {
-  baseUrl: string // url的前缀, 必传
-  siteTitle?: string
-  description?: string
-  author?: string
-  keywords?: string
+export interface BaseVars {
+  baseUrl: string // url的前缀, 必填
+  title: string // 站点标题, 必填
   [key: string]: any
 }
 

@@ -2,12 +2,21 @@
 
 ## Config 类
 
-huno 运行时的基本配置, 及支持解析配置文件来修改配置项
+huno 运行时的基本配置以及站点的基本变量对象, 及支持解析配置文件来修改配置项
 
-1. 定义配置文件, 文档, 模板, 静态资源, 自定义片段等文件目录名称
+1. 定义内容文档, 模板, 静态资源, 自定义片段等文件目录名称
 2. 定义模板名称
 3. 定义开发服务器端口和预览服务器端口
 4. 定义构建产物输出目录
+5. baseVars 基本变量对象
+
+### baseVars
+
+构建产物中的页面基本变量, 通过解析 site.yaml 获取, 标题必填, 其余均为选填, 并且可以添加自定义变量, 会通过 nunjucks 渲染到页面模板中
+
+1. title 站点标题(必填)
+2. baseUrl 域名或链接(必填)
+3. ...
 
 ## Path 类(扩展 Config 类)
 
@@ -26,23 +35,7 @@ huno 运行时的基本配置, 及支持解析配置文件来修改配置项
 1. 根据 partialsPath 获取 marked 使用的 markup 模板片段字符串, 默认获取模板中的 markup 目录中的模板片段, 若 partialsPath/markup 中有正确的对应模板片段则进行替换
 2. 根据 partialsPath 获取 body 中的拓展模板片段字符串
 3. 根据 partialsPath 获取 head 中的拓展模板片段字符串
-4. 在 Parser 中将这些片段会通过 baseVar 渲染之后作为 html 字符串列表插入到单个页面的变量中,随后再在 Renderer 中渲染到真正的页面 html 上
-
-## Variables 类
-
-构建产物中的页面基本变量, 通过解析 site.yaml 获取, 标题必填, 其余均为选填, 并且可以添加自定义变量, 会通过 nunjucks 渲染到页面模板中
-
-1. title 站点标题(必填)
-2. baseUrl 域名或链接
-3. ...
-
-getter:
-
-```js
-get baseVar() {
-  return this._baseVar
-}
-```
+4. 在 Parser 中将这些片段会通过 nunjucks 根据 baseVar 渲染之后作为 html 字符串列表插入到 baseVar 的变量中,随后再在 Renderer 中渲染到真正的页面 html 上
 
 ## Reader 类
 

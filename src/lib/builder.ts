@@ -1,5 +1,6 @@
 import chalk from 'chalk'
 
+import { Path } from './path'
 import { Cache } from '../lib/cache'
 import { Reader } from '../lib/reader'
 import { Renderer } from './renderer'
@@ -8,8 +9,6 @@ import { Generator } from '../lib/generator'
 export class Builder {
   constructor(env?: string) {
     if (env) this._env = env
-    const reader = new Reader(this._env)
-    this._reader = reader
   }
 
   private _env: string = 'prod'
@@ -20,6 +19,9 @@ export class Builder {
   }
 
   async run() {
+    const path = new Path('prod')
+    console.log(path.baseVars)
+    return
     if (!this._reader) {
       console.log(chalk.redBright('Start build failed...'))
       process.exit(1)

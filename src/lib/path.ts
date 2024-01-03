@@ -10,43 +10,20 @@ export class Path extends Config {
   get rootPath(): string {
     return path.resolve()
   }
-  get hunoRootPath(): string {
+  get appPath(): string {
     return path.join(__dirname, '..')
   }
   get contentPath(): string {
     return path.join(this.rootPath, this.contentDir)
   }
-  get outputPath(): string {
-    const isDev = this.env === 'dev'
-    const outputDir = isDev ? '.temp' : this.outputDir
-    return path.join(this.rootPath, outputDir)
-  }
-  get outputContentPath() {
-    return path.join(this.outputPath, this.contentDir)
-  }
-  get outputCategoryPath() {
-    if (!this.category) {
-      return null
-    }
-    return path.join(this.outputPath, this.category)
-  }
-  get outputSeriesPath() {
-    if (!this.series) {
-      return null
-    }
-    return path.join(this.outputPath, this.series)
-  }
-  get outputTagPath() {
-    if (!this.tag) {
-      return null
-    }
-    return path.join(this.outputPath, this.tag)
+  get publicPath(): string {
+    return path.join(this.rootPath, this.publicDir)
   }
   get customTemplatePath(): string {
     return path.join(this.rootPath, this.templateDir)
   }
   get defaultTemplatePath(): string {
-    return path.join(this.hunoRootPath, 'template')
+    return path.join(this.appPath, 'template')
   }
   get templatePath() {
     if (!this.templateName || this.templateName === 'default') {
@@ -55,11 +32,10 @@ export class Path extends Config {
       return path.join(this.customTemplatePath, this.templateName)
     }
   }
-  get templateAssetsPath() {
-    return path.join(this.templatePath, 'assets')
-  }
-  get publicPath(): string {
-    return path.join(this.rootPath, this.publicDir)
+  get outputPath(): string {
+    const isDev = this.env === 'dev'
+    const outputDir = isDev ? '.temp' : this.outputDir
+    return path.join(this.rootPath, outputDir)
   }
 
   public getEncodedUrl(url: string) {
@@ -67,22 +43,5 @@ export class Path extends Config {
       .split('/')
       .map((u) => encodeURI(u))
       .join('/')
-  }
-
-  public getPageUrlByInputFilePath(inputFilePath: string): string {
-    return inputFilePath
-      .replace(this.rootPath, '')
-      .replace(/\\/g, '/')
-      .slice(1)
-      .replace('.md', '')
-      .split('/')
-      .map((url) => encodeURI(url))
-      .join('/')
-  }
-
-  public getOutputFilePathByInputFilePath(inputFilePath: string) {
-    return inputFilePath
-      .replace(this.rootPath, this.outputPath)
-      .replace('.md', '')
   }
 }

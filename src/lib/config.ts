@@ -4,163 +4,96 @@ import yaml from 'yaml'
 import lodash from 'lodash'
 import chalk from 'chalk'
 
-import { CoreConfig, SiteParams, TaxonomyTypeListItem } from '../types'
-
-const defaultCoreConfig: CoreConfig = {
-  contentDir: 'content',
-  outputDir: 'dist',
-  templateDir: 'template',
-  publicDir: 'public',
-  templateName: 'default',
-  port: 8080,
-  category: 'Category',
-  series: 'Series',
-  tag: 'Tag',
-}
-const defaultSiteParams: SiteParams = {
-  baseUrl: '/',
-  defaultLang: 'en',
-  siteTitle: 'Awesome Title',
-  description: 'This is an Awesome WebSite!',
-  author: 'Huno',
-  keywords: '',
-}
+import { BaseVars } from '../types'
 
 export class Config {
   constructor(env: string) {
     this._env = env
-    if (env !== 'new') {
-      this.parseCoreConfig()
-      this.parseSiteParams()
-    }
+    this.buildConfig()
   }
 
-  private _configDir = 'config'
-  private _configFile = 'config.yaml'
-  private _siteParamsFile = 'site.yaml'
-  private _env: string = 'prod'
-  private _config: CoreConfig = defaultCoreConfig
-  private _siteParams: SiteParams = defaultSiteParams
+  private _env: string = 'prod' // 环境变量, 通过命令传入
+  private _configDir = 'config' // 配置文件目录
+  private _configFile = 'config.yaml' // 配置文件名称
+  private _coreConfigKeys = [
+    'contentDir',
+    'publicDir',
+    'templateDir',
+    'templateName',
+    'outputDir',
+    'port',
+    'previewPort',
+  ]
 
-  get env(): string {
+  public contentDir = 'content' // 文章存放的目录
+  public publicDir = 'public' // 静态资源目录
+  public templateDir = 'template' // 模板目录
+  public templateName = 'default' // 模板名称
+  public outputDir = 'dist' // 输出目录
+  public port = 8080 // dev server 端口
+  public previewPort = 9000 // preview server 端口
+  private _baseVars: BaseVars = {
+    baseUrl: '/',
+    title: 'Huno',
+  }
+
+  public get env() {
     return this._env
   }
-  get contentDir(): string {
-    return this._config.contentDir
-  }
-  get outputDir(): string {
-    return this._config.outputDir
-  }
-  get templateDir(): string {
-    return this._config.templateDir
-  }
-  get publicDir(): string {
-    return this._config.publicDir
-  }
-  get templateName(): string {
-    return this._config.templateName
-  }
-  get category(): string | null {
-    return this._config.category || null
-  }
-  get series(): string | null {
-    return this._config.series || null
-  }
-  get tag(): string | null {
-    return this._config.tag || null
-  }
-  get port(): number {
-    return this._config.port
-  }
-  get previewPort(): number {
-    return this._config.previewPort ?? this._config.port
-  }
-  get coreConfig(): CoreConfig {
-    return this._config
-  }
-  get siteParams(): SiteParams {
-    const baseUrl = this.parseBaseUrl(this._siteParams.baseUrl)
+  public get baseVars() {
     return {
-      ...this._siteParams,
-      baseUrl,
+      ...this._baseVars,
+      baseUrl: this._baseVars.baseUrl.endsWith('/')
+        ? this._baseVars.baseUrl
+        : `${this._baseVars.baseUrl}/`,
     }
   }
-  set categories(categories: TaxonomyTypeListItem[]) {
-    this._siteParams.categories = categories
-  }
-  set seriesList(seriesList: TaxonomyTypeListItem[]) {
-    this._siteParams.seriesList = seriesList
-  }
-  set tags(tags: TaxonomyTypeListItem[]) {
-    this._siteParams.tags = tags
-  }
 
-  private parseBaseUrl(url: string) {
-    if (!url.endsWith('/')) {
-      return url + '/'
-    }
-    return url
-  }
-
-  private parseCoreConfig() {
-    console.log(chalk.yellowBright('Start parsing config files...'))
+  private buildConfig() {
+    console.log(chalk.yellowBright('building Huno configures...'))
     const configFilePath = path.join(
       path.resolve(),
       this._configDir,
       this._configFile,
     )
+    const envConfigFilePath = path.join(
+      path.resolve(),
+      this._configDir,
+      `config.${this.env}.yaml`,
+    )
     const configFileExists = fs.existsSync(configFilePath)
-    if (configFileExists) {
-      const config = yaml.parse(fs.readFileSync(configFilePath, 'utf-8')) ?? {}
-      this._config = lodash.merge(this._config, config)
-      this._siteParams._coreConfig = this._config
+    const envConfigFileExists = fs.existsSync(envConfigFilePath)
+    if (configFileExists || envConfigFileExists) {
+      if (configFileExists) {
+        const config =
+          yaml.parse(fs.readFileSync(configFilePath, 'utf-8')) ?? {}
+        this.mergeConfig(config)
+      }
+      if (envConfigFileExists) {
+        const config =
+          yaml.parse(fs.readFileSync(envConfigFilePath, 'utf-8')) ?? {}
+        this.mergeConfig(config)
+      }
+      console.log(chalk.greenBright('building configures completed!'))
     } else {
       console.log(
-        chalk.yellowBright('No exist config file, use default config'),
+        chalk.yellowBright('no existing config files, using default config'),
       )
     }
-    console.log(chalk.greenBright('Parse config files completed!'))
   }
 
-  private parseSiteParams() {
-    console.log(chalk.yellowBright('Start parsing site params files...'))
-
-    const baseSiteParamsFilePath = path.join(
-      path.resolve(),
-      this._configDir,
-      this._siteParamsFile,
+  private mergeConfig(config: any) {
+    const coreConfig = Object.fromEntries(
+      Object.keys(config)
+        .filter((key) => this._coreConfigKeys.includes(key))
+        .map((key) => [key, config[key]]),
     )
-    const siteParamsFileExists = fs.existsSync(baseSiteParamsFilePath)
-    const getEnvSiteParamsFileName = () => {
-      const [pre, ext] = this._siteParamsFile.split('.')
-      return `${pre}.${this.env}.${ext}`
-    }
-    const envSiteParamsFilePath = path.join(
-      path.resolve(),
-      this._configDir,
-      getEnvSiteParamsFileName(),
+    const variables = Object.fromEntries(
+      Object.keys(config)
+        .filter((key) => !this._coreConfigKeys.includes(key))
+        .map((key) => [key, config[key]]),
     )
-    let baseSiteParams = {}
-    let envSiteParams = {}
-    const envSiteParamsExists = fs.existsSync(envSiteParamsFilePath)
-    if (siteParamsFileExists) {
-      baseSiteParams =
-        yaml.parse(fs.readFileSync(baseSiteParamsFilePath, 'utf-8')) ?? {}
-      this._siteParams = lodash.merge(this._siteParams, baseSiteParams)
-    }
-    if (envSiteParamsExists) {
-      envSiteParams =
-        yaml.parse(fs.readFileSync(envSiteParamsFilePath, 'utf-8')) ?? {}
-      this._siteParams = lodash.merge(this._siteParams, envSiteParams)
-    }
-    if (!siteParamsFileExists && !envSiteParamsExists) {
-      console.log(
-        chalk.yellowBright(
-          'No exist site params files found, use default site params...',
-        ),
-      )
-    } else {
-      console.log(chalk.greenBright('Site params files loaded!'))
-    }
+    lodash.merge(this, coreConfig)
+    lodash.merge(this._baseVars, variables)
   }
 }
