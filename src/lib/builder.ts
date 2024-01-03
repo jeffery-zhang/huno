@@ -19,8 +19,8 @@ export class Builder {
   }
 
   async run() {
-    const path = new Path('prod')
-    console.log(path.baseVars)
+    const paths = new Path('prod')
+    console.log(paths.baseVars)
     return
     if (!this._reader) {
       console.log(chalk.redBright('Start build failed...'))

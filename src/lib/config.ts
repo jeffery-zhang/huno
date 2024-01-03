@@ -96,4 +96,8 @@ export class Config {
     lodash.merge(this, coreConfig)
     lodash.merge(this._baseVars, variables)
   }
+
+  public setBaseVars(key: string, value: any) {
+    this._baseVars[key] = value
+  }
 }

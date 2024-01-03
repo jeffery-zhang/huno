@@ -29,7 +29,7 @@ export interface ExtractedContentParams {
 
 // 页面配置, 用于生成对应页面
 export interface PageConfig {
-  params: SiteParams & SinglePageParams
+  params: SinglePageParams
   outputFilePath: string
   inputFilePath?: string // 输入文件的路径
   lastModified?: number // 最后修改时间戳, 根据文件修改时间获取
