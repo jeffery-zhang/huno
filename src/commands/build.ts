@@ -1,6 +1,6 @@
 import chalk from 'chalk'
 
-import { Builder } from '../lib/builder'
+import { Huno } from '../lib/huno'
 import { SingleCommand } from '../types'
 
 interface IParams {
@@ -8,11 +8,8 @@ interface IParams {
 }
 
 const action = async ({ env }: IParams) => {
-  const builder = new Builder(env)
-
-  await builder.run().then(() => {
-    console.log(chalk.greenBright('Build completed!'))
-  })
+  const ctx = new Huno()
+  ctx.build(env!)
 }
 
 export const build: SingleCommand = {

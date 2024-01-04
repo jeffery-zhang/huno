@@ -14,6 +14,11 @@ export interface BaseVars {
   [key: string]: any
 }
 
+export interface PartialsTemplateItem {
+  name: string
+  template: string
+}
+
 // 页面拓展参数
 export interface SinglePageParams {
   type: 'list' | 'index' | 'content' | 'search'

@@ -7,41 +7,37 @@ export class Path extends Config {
     super(env)
   }
 
-  get rootPath(): string {
+  public get rootPath(): string {
     return path.resolve()
   }
-  get appPath(): string {
+  public get appPath(): string {
     return path.join(__dirname, '..')
   }
-  get contentPath(): string {
+  public get contentPath(): string {
     return path.join(this.rootPath, this.contentDir)
   }
-  get publicPath(): string {
+  public get publicPath(): string {
     return path.join(this.rootPath, this.publicDir)
   }
-  get customTemplatePath(): string {
+  public get customTemplatePath(): string {
     return path.join(this.rootPath, this.templateDir)
   }
-  get defaultTemplatePath(): string {
+  public get defaultTemplatePath(): string {
     return path.join(this.appPath, 'template')
   }
-  get templatePath() {
+  public get templatePath() {
     if (!this.templateName || this.templateName === 'default') {
       return this.defaultTemplatePath
     } else {
       return path.join(this.customTemplatePath, this.templateName)
     }
   }
-  get outputPath(): string {
+  public get partialsPath() {
+    return path.join(this.rootPath, this.partialsDir)
+  }
+  public get outputPath(): string {
     const isDev = this.env === 'dev'
     const outputDir = isDev ? '.temp' : this.outputDir
     return path.join(this.rootPath, outputDir)
-  }
-
-  public getEncodedUrl(url: string) {
-    return url
-      .split('/')
-      .map((u) => encodeURI(u))
-      .join('/')
   }
 }

@@ -1,16 +1,21 @@
-import { Config } from './config'
+import { Path } from './path'
+import { Partials } from './partials'
 
 export class Huno {
-  private _env: string
+  private _env: string = ''
 
-  public config: Config | null = null
+  public config: Path | null = null
+  public partials: Partials | null = null
 
-  constructor(env: string) {
-    this._env = env
+  constructor() {
     this.init()
   }
 
-  public init() {
-    this.config = new Config(this._env)
+  private init() {}
+
+  public build(env: string) {
+    this._env = env
+    this.config = new Path(this._env)
+    this.partials = new Partials(this.config)
   }
 }
