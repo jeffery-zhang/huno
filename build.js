@@ -2,7 +2,7 @@ const { nodeExternalsPlugin } = require('esbuild-node-externals')
 
 require('esbuild')
   .build({
-    entryPoints: ['src/huno.ts'],
+    entryPoints: ['src/index.ts'],
     bundle: true,
     outfile: 'bin/huno.min.js',
     platform: 'node',

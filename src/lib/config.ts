@@ -20,6 +20,7 @@ export class Config {
     'publicDir',
     'templateDir',
     'templateName',
+    'pluginsDir',
     'outputDir',
     'port',
     'previewPort',
@@ -30,6 +31,7 @@ export class Config {
   public templateDir = 'template' // 模板目录
   public templateName = 'default' // 模板名称
   public partialsDir = 'partials' // 扩展模板目录
+  public pluginsDir = 'plugins' // 插件目录
   public outputDir = 'dist' // 输出目录
   public port = 8080 // dev server 端口
   public previewPort = 9000 // preview server 端口

@@ -1,3 +1,5 @@
+import { Huno } from './lib/huno'
+
 // 基于commander声明huno单条命令的配置
 export interface SingleCommand {
   command: string // 命令名称
@@ -27,8 +29,9 @@ export interface SinglePageParams {
 }
 
 // 文章拓展参数
-export interface ExtractedContentParams {
+export interface ContentVariables {
   title: string // 文章标题, 必传, 否则不渲染
+  url: string
   [key: string]: any
 }
 
@@ -45,8 +48,9 @@ export interface ParsedContentPageConfigWithContent {
   content: string
 }
 
-export interface TaxonomyTypeListItem {
-  name: string
-  url: string
-  count?: number
+export type HunoPlugin = (
+  ctx: Huno,
+  options: { [key: string]: any },
+) => {
+  init: () => void
 }

@@ -48,3 +48,9 @@ export const start = async (): Promise<void> => {
 
   program.parse()
 }
+
+export const loadPlugins = (plugins: any[]) => {
+  global.plugins = plugins
+}
+
+start()

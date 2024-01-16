@@ -40,4 +40,7 @@ export class Path extends Config {
     const outputDir = isDev ? '.temp' : this.outputDir
     return path.join(this.rootPath, outputDir)
   }
+  public get pluginsPath(): string {
+    return path.join(this.rootPath, this.pluginsDir)
+  }
 }

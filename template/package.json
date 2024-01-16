@@ -1,0 +1,15 @@
+{
+  "name": "huno-default-template",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "tail": "pnpm tailwindcss -i ./src/input.css -o ./assets/css/index.css --watch"
+  },
+  "author": "Jingo",
+  "license": "ISC",
+  "devDependencies": {
+    "@tailwindcss/typography": "^0.5.10",
+    "daisyui": "^4.6.0",
+    "tailwindcss": "^3.4.1"
+  }
+}
