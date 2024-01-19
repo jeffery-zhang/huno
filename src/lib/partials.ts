@@ -36,7 +36,7 @@ export class Partials {
           template: tpl,
         }
       })
-      .filter(({ template }) => !template) as PartialsTemplateItem[]
+      .filter(({ template }) => template) as PartialsTemplateItem[]
 
     this.markupPartialsList = result
   }

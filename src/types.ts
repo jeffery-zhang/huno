@@ -22,9 +22,10 @@ export interface PartialsTemplateItem {
 }
 
 // 页面拓展参数
-export interface SinglePageParams {
-  type: 'list' | 'index' | 'content' | 'search'
+export interface SinglePageVars {
+  type: 'index' | 'content'
   url: string // 页面对应url, 必传
+  fm?: ContentVariables
   [key: string]: any
 }
 
@@ -32,12 +33,13 @@ export interface SinglePageParams {
 export interface ContentVariables {
   title: string // 文章标题, 必传, 否则不渲染
   url: string
+  draft?: boolean
   [key: string]: any
 }
 
 // 页面配置, 用于生成对应页面
 export interface PageConfig {
-  params: SinglePageParams
+  params: SinglePageVars
   outputFilePath: string
   inputFilePath?: string // 输入文件的路径
   lastModified?: number // 最后修改时间戳, 根据文件修改时间获取
@@ -50,7 +52,7 @@ export interface ParsedContentPageConfigWithContent {
 
 export type HunoPlugin = (
   ctx: Huno,
-  options: { [key: string]: any },
+  options: any,
 ) => {
   init: () => void
 }

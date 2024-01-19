@@ -1,25 +1,27 @@
 import fs from 'fs'
 import path from 'path'
+import { marked } from 'marked'
 import { globSync } from 'glob'
 import chalk from 'chalk'
-import dayjs from 'dayjs'
 import fm, { FrontMatterResult } from 'front-matter'
-import lodash from 'lodash'
 
 import { Path } from './path'
 import { ContentVariables } from '../types'
+import dayjs from 'dayjs'
 
 export class Reader {
-  private paths: Path | null = null
-  private _contentList: FrontMatterResult<ContentVariables>[] = []
+  private _path: Path | null = null
+  private _total: number = 0
+  private _finished: number = 0
+  public contentList: FrontMatterResult<ContentVariables>[] = []
 
   constructor(paths: Path) {
     if (!paths) return
-    this.paths = paths
+    this._path = paths
   }
 
   private getUrlByPathName(globPath: string) {
-    const dirname = path.dirname(globPath).replace(this.paths!.contentDir, '')
+    const dirname = path.dirname(globPath).replace(this._path!.contentDir, '')
     const filename = path.basename(globPath).replace('.md', '')
     let url = dirname.replace(/[\\\/]/g, '/') + '/' + filename
     if (!url.startsWith('/')) {
@@ -35,13 +37,19 @@ export class Reader {
   private async readSingleContentFile(
     globPath: string,
   ): Promise<FrontMatterResult<ContentVariables> | null> {
-    const filePath = path.join(this.paths!.rootPath, globPath)
+    const filePath = path.join(this._path!.rootPath, globPath)
+    const mtimeMS = Math.floor(fs.statSync(filePath).mtimeMs)
     return new Promise((resolve) => {
       fs.readFile(filePath, 'utf-8', (err, data) => {
         if (!err) {
           const result = fm<ContentVariables>(data)
           if (result.attributes.title) {
             result.attributes.url = this.getUrlByPathName(globPath)
+            result.attributes.date = dayjs(mtimeMS).format()
+            result.attributes._mtimeMS = mtimeMS
+            if (!Reflect.has(result.attributes, 'draft')) {
+              result.attributes.draft = false
+            }
             resolve(result)
           } else resolve(null)
         } else resolve(null)
@@ -50,22 +58,28 @@ export class Reader {
   }
 
   public async readFiles() {
-    const promises = []
-    const fileGlobPaths = globSync(`${this.paths!.contentPath}/**/*.md`)
+    const promises: Promise<any>[] = []
+    const fileGlobPaths = globSync(`${this._path!.contentPath}/**/*.md`)
+    this._total = fileGlobPaths.length
     fileGlobPaths.forEach((globPath) => {
       promises.push(
         new Promise(async (resolve) => {
           const result = await this.readSingleContentFile(globPath)
 
           if (result) {
-            this._contentList.push(result)
+            this.contentList.push(result)
           }
+          resolve(true)
+          this._finished++
+          process.stdout.write(
+            chalk.yellowBright(
+              `\rReading content files... --> ${this._finished}/${this._total}`,
+            ),
+          )
         }),
       )
     })
-  }
 
-  public get contentList() {
-    return this._contentList
+    await Promise.all(promises)
   }
 }
