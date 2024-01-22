@@ -1,31 +1,29 @@
-import path, { resolve } from 'path'
+import path from 'path'
 import fs from 'fs'
 import chalk from 'chalk'
 import xml2js from 'xml2js'
 
 import { Path } from './path'
-import { PageConfig } from '../types'
+import { ContentVariables } from '../types'
 
 export class Generator {
-  constructor(path: Path) {
-    if (!path) {
-      throw new Error('Path is required in generator')
-    }
-    this._path = path
-  }
+  private _config: Path | null = null
 
-  private _path: Path
+  constructor(config: Path) {
+    if (!config) return
+    this._config = config
+  }
 
   private async generateSinglePage(
     targetPath: string,
     text: string,
     filename?: string,
-  ) {
+  ): Promise<'ok' | 'error'> {
     const targetExists = fs.existsSync(targetPath)
     if (!targetExists) {
       fs.mkdirSync(targetPath, { recursive: true })
     }
-    const targetFilePath = path.join(targetPath, filename ?? 'index.html')
+    const targetFilePath = path.join(targetPath, filename || 'index.html')
 
     return new Promise<'ok' | 'error'>((resolve) => {
       const writeStream = fs.createWriteStream(targetFilePath)
@@ -45,85 +43,107 @@ export class Generator {
     })
   }
 
-  public async copyAssets(): Promise<any> {
-    const inputPath = this._path.templateAssetsPath
-    if (!fs.existsSync(inputPath)) {
-      return
-    }
-    const targetPath = path.join(this._path.outputPath, 'assets')
+  private async copyAssets(): Promise<any> {
+    const inputPath = path.join(this._config!.templatePath, 'assets')
+    if (!fs.existsSync(inputPath)) return
+    const targetPath = path.join(this._config!.outputPath, 'assets')
     const targetExists = fs.existsSync(targetPath)
     if (!targetExists) {
       fs.mkdirSync(targetPath, { recursive: true })
     }
-    return new Promise((resolve, reject) => {
-      console.log(chalk.yellowBright('Start to generate assets files...'))
-      fs.cp(
-        this._path.templateAssetsPath,
-        targetPath,
-        { recursive: true },
-        (err) => {
-          if (err) {
-            reject(err)
-          }
-          resolve(true)
-        },
-      )
-    })
-      .then(() => {
-        console.log(chalk.greenBright('Generate assets files completed!'))
-      })
-      .catch((err) => {
-        console.error(chalk.redBright(`Generate assets files failed \n${err}`))
-        process.exit(1)
-      })
-  }
-
-  public async copyPublic(): Promise<any> {
-    const inputPath = this._path.publicPath
-    if (!fs.existsSync(inputPath)) {
-      return
-    }
-    const targetPath = this._path.outputPath
-    const targetExists = fs.existsSync(targetPath)
-    if (!targetExists) {
-      fs.mkdirSync(targetPath, { recursive: true })
-    }
-    return new Promise((resolve, reject) => {
-      console.log(chalk.yellowBright('Start to generate public files...'))
-      fs.cp(this._path.publicPath, targetPath, { recursive: true }, (err) => {
+    return new Promise((resolve) => {
+      fs.cp(inputPath, targetPath, { recursive: true }, (err) => {
         if (err) {
-          reject(err)
+          console.error(
+            chalk.redBright(`Generate assets files failed \n${err}`),
+          )
+          process.exit(1)
         }
         resolve(true)
       })
     })
-      .then(() => {
-        console.log(chalk.greenBright('Generate public files completed!'))
-      })
-      .catch((err) => {
-        console.error(chalk.redBright(`Generate public files failed \n${err}`))
-        process.exit(1)
-      })
   }
 
-  public async generatePageByPageConfig(config: PageConfig, html: string) {
-    const result = await this.generateSinglePage(config.outputFilePath, html)
+  private async copyPublic(): Promise<any> {
+    const inputPath = this._config!.publicPath
+    if (!fs.existsSync(inputPath)) {
+      return
+    }
+    const targetPath = this._config!.outputPath
+    const targetExists = fs.existsSync(targetPath)
+    if (!targetExists) {
+      fs.mkdirSync(targetPath, { recursive: true })
+    }
+    return new Promise((resolve) => {
+      fs.cp(inputPath, targetPath, { recursive: true }, (err) => {
+        if (err) {
+          console.error(
+            chalk.redBright(`Generate public files failed \n${err}`),
+          )
+          process.exit(1)
+        }
+        resolve(true)
+      })
+    })
+  }
+
+  private async generatePageByPageVars(
+    key: string,
+    html: string,
+  ): Promise<'ok' | 'error'> {
+    const result = await this.generateSinglePage(key, html)
     return result
   }
 
-  public async generateContentMapXml(configs: PageConfig[]) {
+  public async generateContentMapXml(contentVariablesList: ContentVariables[]) {
     const builder = new xml2js.Builder()
 
     const xmlData = builder.buildObject({
-      contentMap: { content: configs.map((config) => config.params) },
+      contentMap: {
+        content: contentVariablesList,
+      },
     })
 
     const result = await this.generateSinglePage(
-      this._path.outputPath,
+      this._config!.outputPath,
       xmlData,
       'contentMap.xml',
     )
 
     return result
+  }
+
+  public async generateAllPage(pageHtmlList: { [key: string]: string }) {
+    if (!this._config) {
+      process.exit(1)
+    }
+    const total: number = Object.keys(pageHtmlList).length
+    let finished: number = 0
+    const promises: Promise<any>[] = []
+    Object.keys(pageHtmlList).forEach((key) => {
+      const html = pageHtmlList[key]
+      promises.push(
+        new Promise(async (resolve) => {
+          const result = await this.generatePageByPageVars(key, html)
+          if (result === 'ok') {
+            finished++
+            process.stdout.write(
+              chalk.yellowBright(
+                `\rGenerating page files... --> ${finished}/${total}`,
+              ),
+            )
+          }
+          resolve(true)
+        }),
+      )
+    })
+    process.stdout.write(
+      chalk.yellowBright(`\rGenerating page files... --> ${finished}/${total}`),
+    )
+    await Promise.all(promises)
+    await this.copyAssets()
+    await this.copyPublic()
+
+    console.log(chalk.greenBright('\nGenerate all pages success!'))
   }
 }

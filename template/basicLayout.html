@@ -4,8 +4,8 @@
       <a
         class="btn btn-ghost text-xl text-primary"
         href="{{baseUrl}}"
-        title="{{siteTitle}}"
-        >{{siteTitle}}</a
+        title="{{title}}"
+        >{{title}}</a
       >
     </div>
     <div class="flex-1 navbar-center justify-center">
@@ -61,10 +61,10 @@
     {#
     <!-- prettier-ignore -->
     #}
-    {% if type !== 'content' %}
-      {% include 'list.html' %}
-    {% else %}
+    {% if _type === 'content' %}
       {% include 'article.html' %}
+    {% else %}
+      {% include 'list.html' %}
     {% endif %}
   </div>
   <div class="hidden h-full lg:block lg:w-1/3"></div>

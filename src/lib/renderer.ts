@@ -1,93 +1,56 @@
 import chalk from 'chalk'
-import { marked } from 'marked'
 import nunjucks from 'nunjucks'
 
-import { Template } from './template'
-import { PageConfig } from '../types'
+import { Path } from './path'
+import { SinglePageVars } from '../types'
 
 export class Renderer {
-  constructor(template: Template) {
-    if (!template) {
-      throw new Error('Template is required in compiler')
-    }
-    this._template = template
-    nunjucks.configure(this._template.templatePath)
-    this.generateMarkedRenderer()
+  private _config: Path | null = null
+
+  constructor(config: Path) {
+    if (!config) return
+    this._config = config
+    nunjucks.configure(this._config.templatePath)
   }
 
-  private _template: Template
-  private _markupArgumentsReg = /\${arguments\[(\d+)\]}/g
-
-  private replaceSingleMarkupTemplateArguments(
-    tpl: string,
-    variables: IArguments,
-  ): string {
-    const result = tpl.replace(this._markupArgumentsReg, (match, num) => {
-      const index = parseInt(num)
-      return variables[index]
-    })
-    return result
-  }
-
-  private generateMarkedRenderer() {
-    const that = this
-    const rendererList = this._template.markupTemplateList.map(
-      ({ name, template }) => {
-        const rendererFunction = function () {
-          const variables = arguments
-          return that.replaceSingleMarkupTemplateArguments(template, variables)
-        }
-        return [name, rendererFunction]
-      },
-    )
-    marked.use({
-      renderer: Object.fromEntries(rendererList),
-    })
-  }
-
-  public compileSinglePageContent(
-    content: string,
-    inputFilePath?: string,
-  ): string | null {
+  private renderSinglePageByVars(key: string, vars: SinglePageVars): string {
     try {
-      const article = marked(content) as string
-      return article
-    } catch (error) {
-      console.error(
-        chalk.redBright(
-          `Compile ${inputFilePath || 'content'} error\n${error}`,
-        ),
-      )
-      return null
-    }
-  }
-
-  public renderCompiledArticleBeforeInsert(
-    config: PageConfig,
-    article: string,
-  ) {
-    try {
-      const renderedArticle = nunjucks.renderString(article, config.params)
-      return renderedArticle
-    } catch (error) {
-      console.error(
-        chalk.redBright(
-          `Render ${config.inputFilePath || ''} article error\n${error}`,
-        ),
-      )
-      return null
-    }
-  }
-
-  public renderPageWithPageConfig(config: PageConfig): string | null {
-    try {
-      const html = nunjucks.render('index.html', config.params)
+      const html = nunjucks.render('index.html', vars)
       return html
     } catch (error) {
-      console.error(
-        chalk.redBright(`Render ${config.outputFilePath} error\n${error}`),
-      )
-      return null
+      console.error(chalk.redBright(`Render ${key} page error\n${error}`))
+      process.exit(1)
     }
+  }
+
+  public renderSingleCompiledArticleBeforeInsert(
+    key: string,
+    vars: SinglePageVars,
+    article: string,
+  ): string {
+    try {
+      const renderedArticle = nunjucks.renderString(article, vars)
+      return renderedArticle
+    } catch (error) {
+      console.error(chalk.redBright(`Render ${key} article error\n${error}`))
+      process.exit(1)
+    }
+  }
+
+  public renderAllPage(pageVariablesList: { [key: string]: SinglePageVars }): {
+    [key: string]: string
+  } {
+    if (!this._config) {
+      process.exit(1)
+    }
+    const result: { [key: string]: string } = {}
+
+    Object.keys(pageVariablesList).forEach((key) => {
+      const vars = pageVariablesList[key]
+      const html = this.renderSinglePageByVars(key, vars)
+      result[key] = html
+    })
+
+    return result
   }
 }

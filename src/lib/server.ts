@@ -9,17 +9,17 @@ export class Server {
     if (!path) {
       throw new Error('Path is required in server')
     }
-    this._path = path
+    this._config = path
   }
 
-  private _path: Path
+  private _config: Path
   private _server: http.Server | null = null
 
   startServer() {
     const app: Express = express()
-    const port = this._path.port
+    const port = this._config.port
 
-    app.use('/', express.static(this._path.outputPath))
+    app.use('/', express.static(this._config.outputPath))
 
     const server: http.Server = app.listen(port, () => {
       console.log(

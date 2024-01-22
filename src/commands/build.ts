@@ -1,5 +1,3 @@
-import chalk from 'chalk'
-
 import { Huno } from '../lib/huno'
 import { SingleCommand } from '../types'
 
@@ -8,8 +6,8 @@ interface IParams {
 }
 
 const action = async ({ env }: IParams) => {
-  const ctx = new Huno()
-  ctx.build(env!)
+  const huno = new Huno(env!)
+  huno.build()
 }
 
 export const build: SingleCommand = {

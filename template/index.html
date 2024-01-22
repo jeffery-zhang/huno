@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html lang="{{defaultLang}}" class="h-full">
   <head>
-    {% if title %}
-    <title>{{title}} | {{siteTitle}}</title>
+    {% if _fm %}
+    <title>{{_fm.title}} | {{title}}</title>
     {% else %}
-    <title>{{siteTitle}}</title>
+    <title>{{title}}</title>
     {% endif %}
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="{{page.description | default(description)}}"
+      content="{{_fm.description | default(description)}}"
     />
-    <meta name="author" content="{{page.author | default(author)}}" />
-    <meta name="keywords" content="{{page.keywords | default(keywords)}}" />
+    <meta name="author" content="{{_fm.author | default(author)}}" />
+    <meta name="keywords" content="{{_fm.keywords | default(keywords)}}" />
     <link
       rel="shortcut icon"
       href="{{baseUrl}}favicon.ico"

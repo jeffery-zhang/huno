@@ -7,21 +7,21 @@ import { markedRendererFileNames } from '../utils/markedRenderer'
 import { PartialsTemplateItem } from '../types'
 
 export class Partials {
-  private _path: Path | null = null
+  private _config: Path | null = null
 
   public markupPartialsList: PartialsTemplateItem[] = []
   public extendPartialsList: PartialsTemplateItem[] = []
 
-  constructor(paths: Path) {
-    this._path = paths
+  constructor(config: Path) {
+    this._config = config
     this.getMarkupPartials()
     this.getExtendPartials()
   }
 
   private getMarkupPartials() {
-    if (!this._path) return
-    const customMarkupPath = path.join(this._path.partialsPath, 'markups')
-    const templateMarkupPath = path.join(this._path.appPath, 'markups')
+    if (!this._config) return
+    const customMarkupPath = path.join(this._config.partialsPath, 'markups')
+    const templateMarkupPath = path.join(this._config.appPath, 'markups')
 
     const result: PartialsTemplateItem[] = markedRendererFileNames
       .map((name) => {
@@ -56,8 +56,8 @@ export class Partials {
   }
 
   private getExtendPartials() {
-    if (!this._path) return
-    const customPartialsPath = path.join(this._path.partialsPath, 'extends')
+    if (!this._config) return
+    const customPartialsPath = path.join(this._config.partialsPath, 'extends')
     if (!fs.existsSync(customPartialsPath)) return
     const partialsFiles = globSync(`${customPartialsPath}/*.html`)
     const result: PartialsTemplateItem[] = partialsFiles.map((filePath) => {

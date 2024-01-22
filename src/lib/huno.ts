@@ -1,8 +1,11 @@
 import { Path } from './path'
 import { Partials } from './partials'
 import { Reader } from './reader'
-import { SinglePageVars } from '../types'
 import { Assembler } from './assembler'
+import { Renderer } from './renderer'
+import { Generator } from './generator'
+import { Server } from './server'
+import { BaseVars, ContentVariables, SinglePageVars } from '../types'
 
 export class Huno {
   private _env: string = ''
@@ -11,23 +14,55 @@ export class Huno {
   private _partials: Partials | null = null
   private _reader: Reader | null = null
   private _assembler: Assembler | null = null
-  private _pageVars: { [key: string]: SinglePageVars } = {}
+  private _renderer: Renderer | null = null
+  private _generator: Generator | null = null
 
-  constructor() {
-    this.init()
-  }
+  public baseVariables: BaseVars
+  public contentVariablesList: ContentVariables[] = []
+  public pageVariablesList: { [key: string]: SinglePageVars } = {}
+  public pageArticleList: { [key: string]: string } = {}
 
-  private init() {}
-
-  public async build(env: string) {
+  constructor(env: string) {
     this._env = env
     this._config = new Path(this._env)
+    this.baseVariables = this._config.baseVars
+    this.init(env)
+  }
+
+  private init(env: string) {}
+
+  public async build() {
+    if (!this._config) return
     this._partials = new Partials(this._config)
     this._reader = new Reader(this._config)
-    await this._reader.readFiles()
     this._assembler = new Assembler(this._config, this._partials)
-    this._assembler.assemblePageVars(this._reader.contentList)
-    this._pageVars = this._assembler.pageVars
-    console.log(this._partials.extendPartialsList)
+    this._renderer = new Renderer(this._config)
+    this._generator = new Generator(this._config)
+
+    const frontMatters = await this._reader.readFiles()
+    const { contentVars, pageVars, pageArticles } =
+      this._assembler.assembleAllPage(this.baseVariables, frontMatters)
+
+    this.contentVariablesList = contentVars
+    this.pageVariablesList = pageVars
+    this.pageArticleList = pageArticles
+
+    Object.keys(this.pageArticleList).forEach((key) => {
+      const renderedArticle: string =
+        this._renderer!.renderSingleCompiledArticleBeforeInsert(
+          key,
+          this.pageVariablesList[key],
+          this.pageArticleList[key],
+        )
+      this.pageVariablesList[key]._article = renderedArticle
+    })
+    const pageHtmlList = this._renderer.renderAllPage(this.pageVariablesList)
+    await this._generator.generateAllPage(pageHtmlList)
+  }
+
+  public preview() {
+    const server = new Server(this._config!)
+
+    server.startServer()
   }
 }

@@ -1,11 +1,11 @@
 <article class="prose w-full max-w-full">
   <div class="stat">
-    <div class="stat-title">{{author}}</div>
-    <h2 class="stat-value my-4">{{title}}</h2>
-    <span class="stat-desc mb-2">Updated at {{updateTime}}</span>
-    <span class="stat-desc badge badge-lg badge-neutral">{{category}}</span>
+    <div class="stat-title">{{_fm.author}}</div>
+    <h2 class="stat-value my-4">{{_fm.title}}</h2>
+    <span class="stat-desc mb-2">Updated at {{_fm.date}}</span>
+    <span class="stat-desc badge badge-lg badge-neutral">{{_fm.category}}</span>
   </div>
-  <p>{{description}}</p>
+  <p>{{_fm.description}}</p>
   <div class="divider mb-8"></div>
-  {{article | safe}}
+  {{_article | safe}}
 </article>

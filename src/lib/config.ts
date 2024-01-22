@@ -7,11 +7,6 @@ import chalk from 'chalk'
 import { BaseVars } from '../types'
 
 export class Config {
-  constructor(env: string) {
-    this._env = env
-    this.buildConfig()
-  }
-
   private _env: string = 'prod' // 环境变量, 通过命令传入
   private _configDir = 'config' // 配置文件目录
   private _configFile = 'config.yaml' // 配置文件名称
@@ -24,6 +19,7 @@ export class Config {
     'outputDir',
     'port',
     'previewPort',
+    'contentMap',
   ]
 
   public contentDir = 'content' // 文章存放的目录
@@ -35,21 +31,15 @@ export class Config {
   public outputDir = 'dist' // 输出目录
   public port = 8080 // dev server 端口
   public previewPort = 9000 // preview server 端口
+  public contentMap = false // 是否生成 contentMap
   private _baseVars: BaseVars = {
     baseUrl: '/',
     title: 'Huno',
   }
 
-  public get env() {
-    return this._env
-  }
-  public get baseVars() {
-    return {
-      ...this._baseVars,
-      baseUrl: this._baseVars.baseUrl.endsWith('/')
-        ? this._baseVars.baseUrl
-        : `${this._baseVars.baseUrl}/`,
-    }
+  constructor(env: string) {
+    this._env = env
+    this.buildConfig()
   }
 
   private buildConfig() {
@@ -100,7 +90,15 @@ export class Config {
     lodash.merge(this._baseVars, variables)
   }
 
-  public setBaseVars(key: string, value: any) {
-    this._baseVars[key] = value
+  public get env() {
+    return this._env
+  }
+  public get baseVars() {
+    return {
+      ...this._baseVars,
+      baseUrl: this._baseVars.baseUrl.endsWith('/')
+        ? this._baseVars.baseUrl
+        : `${this._baseVars.baseUrl}/`,
+    }
   }
 }
