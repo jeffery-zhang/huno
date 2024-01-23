@@ -1,3 +1,5 @@
+import chalk from 'chalk'
+
 import { Path } from './path'
 import { Cacher } from './cacher'
 import { Partials } from './partials'
@@ -6,26 +8,38 @@ import { Assembler } from './assembler'
 import { Renderer } from './renderer'
 import { Generator } from './generator'
 import { Server } from './server'
-import { BaseVars, ContentVariables, SinglePageVars } from '../types'
-import chalk from 'chalk'
+import { Plugins } from './plugins'
+import {
+  BaseVars,
+  ContentVariables,
+  HunoOptions,
+  SinglePageVars,
+} from '../types'
 
 export class Huno {
   private _env: string = ''
 
   private _config: Path | null = null
   private _cacher: Cacher | null = null
-  private coreConfig: any
+  private _plugins: Plugins | null = null
+  private _coreConfig: any
 
+  public options: HunoOptions = {
+    noCache: false,
+    noPlugins: false,
+  }
   public baseVariables: BaseVars
   public contentVariablesList: ContentVariables[] = []
   public pageVariablesList: { [key: string]: SinglePageVars } = {}
   public pageArticleList: { [key: string]: string } = {}
 
-  constructor(env: string) {
+  constructor(env: string, options?: HunoOptions) {
     this._env = env
+    if (options) this.options = options
     this._config = new Path(this._env)
-    this._cacher = new Cacher(this._env)
-    this.coreConfig = this._config.coreConfig
+    this._cacher = new Cacher(this._env, this.options.noCache)
+    this._plugins = new Plugins(this._config)
+    this._coreConfig = this._config.coreConfig
     this.baseVariables = this._config.baseVars
     this.init(env)
   }
@@ -33,9 +47,12 @@ export class Huno {
   private init(env: string) {}
 
   public async build() {
+    if (this._plugins) {
+      this._plugins.loadPlugins()
+    }
     if (!this._config || !this._cacher) return
     this._cacher.checkOutputExists(this._config.outputPath)
-    this._cacher.updateCoreConfig(this.coreConfig)
+    this._cacher.updateCoreConfig(this._coreConfig)
     const partials = new Partials(this._config)
     const reader = new Reader(this._config)
     const assembler = new Assembler(this._config, partials)

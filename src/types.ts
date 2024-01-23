@@ -9,6 +9,12 @@ export interface SingleCommand {
   arguments?: string[][] // 命令参数
 }
 
+// Huno选项
+export interface HunoOptions {
+  noCache: boolean
+  noPlugins: boolean
+}
+
 // 页面基本参数
 export interface BaseVars {
   baseUrl: string // url的前缀, 必填
@@ -16,6 +22,7 @@ export interface BaseVars {
   [key: string]: any
 }
 
+// 模板片段
 export interface PartialsTemplateItem {
   name: string
   template: string
@@ -36,6 +43,7 @@ export interface SinglePageVars {
   [key: string]: any
 }
 
+// 插件
 export type HunoPlugin = (
   ctx: Huno,
   options: any,

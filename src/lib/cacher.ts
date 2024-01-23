@@ -7,9 +7,11 @@ import { Config } from './config'
 import { BaseVars, PartialsTemplateItem, SinglePageVars } from '../types'
 
 export class Cacher {
-  constructor(env: string) {
+  constructor(env: string, noCache: boolean = false) {
     this._env = env
-    this.readCache()
+    if (!noCache) {
+      this.readCache()
+    }
   }
 
   private _env: string
