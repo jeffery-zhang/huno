@@ -3,7 +3,6 @@ import { SingleCommand } from '../types'
 
 const action = async () => {
   const huno = new Huno('prod')
-  await huno.build()
   huno.preview()
 }
 

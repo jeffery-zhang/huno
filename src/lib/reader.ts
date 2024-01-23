@@ -1,6 +1,5 @@
 import fs from 'fs'
 import path from 'path'
-import { marked } from 'marked'
 import { globSync } from 'glob'
 import chalk from 'chalk'
 import fm, { FrontMatterResult } from 'front-matter'

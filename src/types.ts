@@ -21,18 +21,18 @@ export interface PartialsTemplateItem {
   template: string
 }
 
-// 页面拓展参数
-export interface SinglePageVars {
-  _type: 'index' | 'content'
-  _url: string // 页面对应url, 必传
-  fm?: ContentVariables
-  [key: string]: any
-}
-
 // 文章拓展参数
 export interface ContentVariables {
   title: string
   draft?: boolean
+  [key: string]: any
+}
+
+// 页面拓展参数
+export interface SinglePageVars {
+  _type: 'index' | 'content'
+  _url: string // 页面对应url, 必传
+  _fm?: ContentVariables
   [key: string]: any
 }
 

@@ -101,4 +101,12 @@ export class Config {
         : `${this._baseVars.baseUrl}/`,
     }
   }
+
+  public get coreConfig() {
+    const obj: any = {}
+    this._coreConfigKeys.forEach((key) => {
+      obj[key] = this[key as keyof Config]
+    })
+    return obj
+  }
 }

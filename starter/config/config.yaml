@@ -1,7 +1,15 @@
 contentDir: 'content'
-outputDir: 'dist'
 publicDir: 'public'
+templateDir: 'template'
+templateName: 'default'
+partialsDir: 'partials'
+pluginsDir: 'plugins'
+outputDir: 'dist'
 port: 8080
-category: 'Category'
-series: 'Series'
-tag: 'Tag'
+previewPort: 9000
+contentMap: false
+
+baseUrl: '/'
+title: 'Hello Huno'
+description: 'Welcome to Huno'
+author: 'Huno'

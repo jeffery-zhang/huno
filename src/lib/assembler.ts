@@ -4,7 +4,7 @@ import { marked } from 'marked'
 
 import { Path } from './path'
 import { Partials } from './partials'
-import { BaseVars, ContentVariables, SinglePageVars } from '../types'
+import { ContentVariables, SinglePageVars } from '../types'
 import chalk from 'chalk'
 
 export class Assembler {
@@ -51,10 +51,7 @@ export class Assembler {
     }
   }
 
-  public assembleAllPage(
-    baseVars: BaseVars,
-    contentList: FrontMatterResult<ContentVariables>[],
-  ): {
+  public assembleAllPage(contentList: FrontMatterResult<ContentVariables>[]): {
     contentVars: ContentVariables[]
     pageVars: { [key: string]: SinglePageVars }
     pageArticles: { [key: string]: string }
@@ -73,14 +70,12 @@ export class Assembler {
 
       pageArticles[key] = this.getSinglePageArticle(obj.body)
       pageVars[key] = {
-        ...baseVars,
         _type: 'content',
         _url: vars._url,
         _fm: vars,
       }
     })
     pageVars[this._config!.outputPath] = {
-      ...baseVars,
       _type: 'index',
       _url: '/',
       _contentList: contentVars,
