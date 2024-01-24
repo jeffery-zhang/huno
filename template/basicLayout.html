@@ -16,15 +16,6 @@
         {% include 'menu.html' %}
       {% endif %}
     </div>
-    <div class="flex-none">
-      <input
-        type="text"
-        placeholder="Search..."
-        class="input input-sm input-bordered max-w-xs"
-        id="searchInput"
-        @keyup.enter="search"
-      />
-    </div>
     <label class="swap swap-rotate mx-4">
       <input type="checkbox" @change="toggleTheme" />
       {#

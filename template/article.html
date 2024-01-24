@@ -2,8 +2,10 @@
   <div class="stat">
     <div class="stat-title">{{_fm.author}}</div>
     <h2 class="stat-value my-4">{{_fm.title}}</h2>
-    <span class="stat-desc mb-2">Updated at {{_fm.date}}</span>
+    <span class="stat-desc mb-2">Updated at {{_fm._date}}</span>
+    {% if _fm.category %}
     <span class="stat-desc badge badge-lg badge-neutral">{{_fm.category}}</span>
+    {% endif %}
   </div>
   <p>{{_fm.description}}</p>
   <div class="divider mb-8"></div>
