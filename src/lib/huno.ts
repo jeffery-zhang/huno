@@ -86,6 +86,7 @@ export class Huno {
     await this._plugins?.excutePlugins(this)
 
     this._cacher.updateBaseVars(this.baseVariables)
+    console.log(this.pageVariablesList)
 
     const pageHtmlList = renderer.renderAllPage(
       this.baseVariables,

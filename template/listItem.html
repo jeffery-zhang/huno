@@ -14,7 +14,9 @@
     </div>
     <p>{{item.description}}</p>
     <div>
+      {% if _fm.category %}
       <span class="badge badge-lg badge-neutral">{{item.category}}</span>
+      {% endif %}
     </div>
     <div class="card-actions justify-end">
       <a href="{{baseUrl}}{{item._url}}" class="btn btn-sm btn-primary">
