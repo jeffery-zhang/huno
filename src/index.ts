@@ -3,10 +3,11 @@ import { program } from 'commander'
 
 import { build } from './commands/build'
 import { preview } from './commands/preview'
+import { create } from './commands/create'
 import { SingleCommand } from './types'
 
 const setCommand = async () => {
-  const commands: SingleCommand[] = [build, preview]
+  const commands: SingleCommand[] = [build, preview, create]
   const promises: Promise<any>[] = []
   commands.map((obj) => {
     promises.push(

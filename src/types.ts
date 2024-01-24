@@ -2,7 +2,7 @@ import { Huno } from './lib/huno'
 
 // 基于commander声明huno单条命令的配置
 export interface SingleCommand {
-  command: string // 命令名称
+  command: 'build' | 'preview' | 'create' // 命令名称
   description: string // 命令描述
   action: (params?: any) => void | Promise<void> // 命令执行的函数
   options?: string[][] // 命令选项
@@ -40,13 +40,12 @@ export interface SinglePageVars {
   _type: 'index' | 'content'
   _url: string // 页面对应url, 必传
   _fm?: ContentVariables
+  _contentList?: ContentVariables[]
   [key: string]: any
 }
 
 // 插件
-export type HunoPlugin = (
-  ctx: Huno,
-  options: any,
-) => {
-  init: () => void
+export type HunoPlugin = (ctx: Huno) => {
+  name: string
+  init?: () => void | Promise<void>
 }

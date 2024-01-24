@@ -6,8 +6,7 @@ interface IParams {
 }
 
 const action = async ({ env }: IParams) => {
-  const huno = new Huno(env!)
-  huno.build()
+  new Huno(env!, 'build')
 }
 
 export const build: SingleCommand = {

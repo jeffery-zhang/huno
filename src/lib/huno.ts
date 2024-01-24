@@ -1,3 +1,4 @@
+import path from 'path'
 import chalk from 'chalk'
 
 import { Path } from './path'
@@ -13,6 +14,7 @@ import {
   BaseVars,
   ContentVariables,
   HunoOptions,
+  SingleCommand,
   SinglePageVars,
 } from '../types'
 
@@ -23,17 +25,20 @@ export class Huno {
   private _cacher: Cacher | null = null
   private _plugins: Plugins | null = null
   private _coreConfig: any
-
-  public options: HunoOptions = {
+  private options: HunoOptions = {
     noCache: false,
     noPlugins: false,
   }
-  public baseVariables: BaseVars
-  public contentVariablesList: ContentVariables[] = []
-  public pageVariablesList: { [key: string]: SinglePageVars } = {}
-  public pageArticleList: { [key: string]: string } = {}
+  private baseVariables: BaseVars
+  private contentVariablesList: ContentVariables[] = []
+  private pageVariablesList: { [key: string]: SinglePageVars } = {}
+  private pageArticleList: { [key: string]: string } = {}
 
-  constructor(env: string, options?: HunoOptions) {
+  constructor(
+    env: string,
+    cmd: SingleCommand['command'],
+    options?: HunoOptions,
+  ) {
     this._env = env
     if (options) this.options = options
     this._config = new Path(this._env)
@@ -41,14 +46,23 @@ export class Huno {
     this._plugins = new Plugins(this._config)
     this._coreConfig = this._config.coreConfig
     this.baseVariables = this._config.baseVars
-    this.init(env)
+    this.init(cmd)
   }
 
-  private init(env: string) {}
+  private init(cmd: SingleCommand['command']) {
+    switch (cmd) {
+      case 'build':
+        this.build()
+        break
+      case 'preview':
+        this.preview()
+        break
+    }
+  }
 
-  public async build() {
+  private async build() {
     if (this._plugins) {
-      this._plugins.loadPlugins()
+      this._plugins.loadPlugins(this._config!.plugins)
     }
     if (!this._config || !this._cacher) return
     this._cacher.checkOutputExists(this._config.outputPath)
@@ -69,6 +83,8 @@ export class Huno {
     this.pageVariablesList = pageVars
     this.pageArticleList = pageArticles
 
+    await this._plugins?.excutePlugins(this)
+
     this._cacher.updateBaseVars(this.baseVariables)
 
     const pageHtmlList = renderer.renderAllPage(
@@ -86,9 +102,46 @@ export class Huno {
     await generator.generateAllPage(pageHtmlList)
   }
 
-  public preview() {
+  private preview() {
     const server = new Server(this._config!)
 
     server.startServer()
+  }
+
+  public get siteVariables() {
+    return this.baseVariables
+  }
+
+  public get allPages() {
+    return this.pageVariablesList
+  }
+
+  public get allContent() {
+    return this.contentVariablesList
+  }
+
+  public get allArticles() {
+    return this.pageArticleList
+  }
+
+  public setSiteVariables(key: string, value: any) {
+    this._config?.setBaseVars(key, value)
+    this.baseVariables[key] = value
+  }
+
+  public addPage(url: string, variables: SinglePageVars) {
+    const outputPath = path.join(this._config!.outputPath, 'url')
+    const encodedUrl = url.split('/').map(encodeURI).join('/')
+    const pageVars = {
+      ...variables,
+      _type: variables._type ?? 'index',
+      _url: encodedUrl,
+    }
+
+    this.pageVariablesList[outputPath] = pageVars
+  }
+
+  public removePage(outputPath: string) {
+    Reflect.deleteProperty(this.pageVariablesList, outputPath)
   }
 }

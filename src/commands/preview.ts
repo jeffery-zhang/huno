@@ -2,8 +2,7 @@ import { Huno } from '../lib/huno'
 import { SingleCommand } from '../types'
 
 const action = async () => {
-  const huno = new Huno('prod')
-  huno.preview()
+  new Huno('prod', 'preview')
 }
 
 export const preview: SingleCommand = {

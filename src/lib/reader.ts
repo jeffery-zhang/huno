@@ -25,10 +25,7 @@ export class Reader {
     if (url.startsWith('/')) {
       url = url.slice(1)
     }
-    const encodedUrl = url
-      .split('/')
-      .map((u) => encodeURI(u))
-      .join('/')
+    const encodedUrl = url.split('/').map(encodeURI).join('/')
 
     return encodedUrl
   }

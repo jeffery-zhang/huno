@@ -15,23 +15,23 @@ export class Config {
     'publicDir',
     'templateDir',
     'templateName',
-    'pluginsDir',
     'outputDir',
     'port',
     'previewPort',
     'contentMap',
+    'plugins',
   ]
 
-  public contentDir = 'content' // 文章存放的目录
-  public publicDir = 'public' // 静态资源目录
-  public templateDir = 'template' // 模板目录
-  public templateName = 'default' // 模板名称
-  public partialsDir = 'partials' // 扩展模板目录
-  public pluginsDir = 'plugins' // 插件目录
-  public outputDir = 'dist' // 输出目录
-  public port = 8080 // dev server 端口
-  public previewPort = 9000 // preview server 端口
-  public contentMap = false // 是否生成 contentMap
+  public contentDir: string = 'content' // 文章存放的目录
+  public publicDir: string = 'public' // 静态资源目录
+  public templateDir: string = 'template' // 模板目录
+  public templateName: string = 'default' // 模板名称
+  public partialsDir: string = 'partials' // 扩展模板目录
+  public outputDir: string = 'dist' // 输出目录
+  public port: number = 8080 // dev server 端口
+  public previewPort: number = 9000 // preview server 端口
+  public contentMap: boolean = false // 是否生成 contentMap
+  public plugins: string[] = []
   private _baseVars: BaseVars = {
     baseUrl: '/',
     title: 'Huno',
@@ -39,7 +39,9 @@ export class Config {
 
   constructor(env: string) {
     this._env = env
-    this.buildConfig()
+    if (env !== 'new') {
+      this.buildConfig()
+    }
   }
 
   private buildConfig() {
@@ -67,7 +69,7 @@ export class Config {
           yaml.parse(fs.readFileSync(envConfigFilePath, 'utf-8')) ?? {}
         this.mergeConfig(config)
       }
-      console.log(chalk.greenBright('building configures completed!'))
+      console.log(chalk.greenBright('Building configures completed!'))
     } else {
       console.log(
         chalk.yellowBright('no existing config files, using default config'),
@@ -81,11 +83,7 @@ export class Config {
         .filter((key) => this._coreConfigKeys.includes(key))
         .map((key) => [key, config[key]]),
     )
-    const variables = Object.fromEntries(
-      Object.keys(config)
-        .filter((key) => !this._coreConfigKeys.includes(key))
-        .map((key) => [key, config[key]]),
-    )
+    const variables = config.baseVariables ?? {}
     lodash.merge(this, coreConfig)
     lodash.merge(this._baseVars, variables)
   }
@@ -108,5 +106,9 @@ export class Config {
       obj[key] = this[key as keyof Config]
     })
     return obj
+  }
+
+  public setBaseVars(key: string, value: any) {
+    this._baseVars[key] = value
   }
 }
